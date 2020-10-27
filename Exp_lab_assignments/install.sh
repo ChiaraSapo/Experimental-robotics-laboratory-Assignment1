@@ -27,7 +27,7 @@ then
 fi 
 
 #installation
-path2=$(find . -name EL_ass -print 2>/dev/null | grep 'src/EL_ass')
+path2=$(find . -name Exp_lab_assignments -print 2>/dev/null | grep 'src/Exp_lab_assignments')
 cd $path2
 #activation of all sh scripts
 

@@ -4,7 +4,8 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import time
-
+import rospy
+from std_msgs.msg import Int64MultiArray
 
 # takes as input the trajectory
 # waits 5 seconds
@@ -22,9 +23,11 @@ def show_grid(pos_x, pos_y):
     plt.show()
 
 
-def main():
+def callback(data):
+
     # receive this as msgs
-    trajectory = np.array([[1, 2, 3], [2, 4, 6]])
+    trajectory = data.data
+    trajectory = np.reshape(trajectory, (2, len(trajectory)/2))
 
     # ... actuate motors...
     time.sleep(2)
@@ -39,8 +42,16 @@ def main():
 
     # send goto_finished, current_pos
 
+
+def robot_motion_controller():
+
+    rospy.init_node('robot_motion_controlller', anonymous=True)
+
+    rospy.Subscriber("trajectory", Int64MultiArray, callback)
+
+    rospy.spin()
     pass
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    robot_motion_controller()

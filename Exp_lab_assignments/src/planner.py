@@ -1,17 +1,26 @@
 #!/usr/bin/python2.7
 
 import numpy as np
+import random
+import rospy
+import numpy as np
+from std_msgs.msg import Int64MultiArray
 
 # takes as input the next position to reach (x_target, y_target)
 # calulates trajectory
 # sends trajectory as output
 
+pub = rospy.Publisher('trajectory', Int64MultiArray, queue_size=10)
+# rate = rospy.Rate(10)  # 10hz
+trajectory_to_send = Int64MultiArray()
+trajectory_to_send.data = []
 
-def main():
+
+def callback(data):
     # receive target_pos and current_pos
-    target_pos = [4, 4]
-    current_pos = [6, 5]
 
+    target_pos = data.data[0:2]
+    current_pos = data.data[2:4]
     target_x = target_pos[0]
     target_y = target_pos[1]
     current_x = current_pos[0]
@@ -29,13 +38,21 @@ def main():
         current_y = current_y+(target_y - current_y)/abs(target_y - current_y)
         next_x.append(current_x)
         next_y.append(current_y)
-    
-    trajectory = np.array([next_x, next_y])
-    print(trajectory)
-    # send (next_x, next_y)
 
+    trajectory = np.concatenate((next_x, next_y), axis=0)
+
+    trajectory_to_send.data = trajectory
+    pub.publish(trajectory_to_send)
+
+
+def planner():
+    rospy.init_node('planner', anonymous=True)
+
+    rospy.Subscriber("target_pos", Int64MultiArray, callback)
+
+    rospy.spin()
     pass
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    planner()

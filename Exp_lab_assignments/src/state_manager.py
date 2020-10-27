@@ -31,7 +31,10 @@ class MIRO_Sleep(smach.State):
         sleep_command = 'go_home'
         # publish(sleep_command)
         # request a goto_finished
-        time.sleep(10)
+        # time.sleep(10)
+        print('S')
+        c = 'normal_command'
+        return c
 
 
 class MIRO_Normal(smach.State):
@@ -49,6 +52,9 @@ class MIRO_Normal(smach.State):
 
     def execute(self, userdata):
         # function called when exiting from the node, it can be blacking
+        print('N')
+        c = random.choice(['sleep_command', 'play_command'])
+        return c
 
 
 class MIRO_Play(smach.State):
@@ -66,15 +72,16 @@ class MIRO_Play(smach.State):
 
     def execute(self, userdata):
         # function called when exiting from the node, it can be blacking
+        print('P')
+        c = 'normal_command'
+        return c
 
 
 def main():
-    rospy.init_node('Ass1')
+    rospy.init_node('state_manager')
 
     # Create a SMACH state machine
-
-    # counter for how many users. passed to states with differnet names
-    sm.userdata.sm_counter = 0
+    sm = smach.StateMachine(outcomes=['container_interface'])
 
     # Open the container
     with sm:
@@ -84,7 +91,7 @@ def main():
         smach.StateMachine.add('NORMAL', MIRO_Normal(),
                                transitions={'sleep_command': 'SLEEP',
                                             'play_command': 'PLAY'})
-        smach.StateMachine.add('PLAY', MIRO_Sleep(),
+        smach.StateMachine.add('PLAY', MIRO_Play(),
                                transitions={'normal_command': 'NORMAL'})
 
     # Create and start the introspection server for visualization

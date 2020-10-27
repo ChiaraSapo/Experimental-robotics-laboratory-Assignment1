@@ -13,6 +13,7 @@ from std_msgs.msg import Int64MultiArray
 
 
 def show_grid(pos_x, pos_y):
+
     fig = plt.figure()
     plt.axis([0, 10, 0, 10])
     plt.xticks(np.arange(0, 10))
@@ -20,7 +21,10 @@ def show_grid(pos_x, pos_y):
 
     plt.scatter(pos_x, pos_y)
     plt.grid()
-    plt.show()
+
+    plt.show(block=False)
+    plt.pause(4)
+    plt.close()
 
 
 def callback(data):

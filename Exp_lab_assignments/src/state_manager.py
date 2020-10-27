@@ -6,6 +6,8 @@ import smach
 import smach_ros
 import time
 import random
+from std_msgs.msg import String
+import matplotlib.pyplot as plt
 
 # INSTALLATION
 # - move this file to the 'ML_ass/scr' folder and give running permissions to it with
@@ -16,6 +18,8 @@ import random
 #          $ sudo apt-get install ros-kinetic-smach-viewer
 # - run the visualiser with
 #          $ rosrun smach_viewer smach_viewer.py
+
+pub = rospy.Publisher('command', String, queue_size=10)
 
 
 class MIRO_Sleep(smach.State):
@@ -33,25 +37,31 @@ class MIRO_Sleep(smach.State):
         # request a goto_finished
         # time.sleep(10)
         print('S')
+        pub.publish(sleep_command)
+        time.sleep(6)
+
         c = 'normal_command'
         return c
 
 
 class MIRO_Normal(smach.State):
-    # Loop:
-    # request_to_play? from dialog manager
-    #   if yes return it and exit.
-    #   else:
-    #       send go_rand to geometry grounding
-    #       wait for goto_finished from robot motion controller
-    #       wait 5 sec
 
     def __init__(self):
         smach.State.__init__(self,
                              outcomes=['sleep_command', 'play_command'])
 
     def execute(self, userdata):
-        # function called when exiting from the node, it can be blacking
+        # Loop:
+        # request_to_play? from dialog manager
+        #   if yes return it and exit.
+        #   else:
+        #       send go_rand to geometry grounding
+        #       wait for goto_finished from robot motion controller
+        #       wait 5 sec
+        normal_command = 'go_rand'
+        pub.publish(normal_command)
+        time.sleep(6)
+
         print('N')
         c = random.choice(['sleep_command', 'play_command'])
         return c
@@ -71,7 +81,10 @@ class MIRO_Play(smach.State):
                              outcomes=['normal_command'])
 
     def execute(self, userdata):
-        # function called when exiting from the node, it can be blacking
+        play_command = random.choice(
+            ['go to 5 4', 'go to 3 7', 'go to 5 9', 'go to 6 3', 'go to 9 6'])
+        pub.publish(play_command)
+        time.sleep(6)
         print('P')
         c = 'normal_command'
         return c

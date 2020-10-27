@@ -1,0 +1,5 @@
+---
+bool person_pos_on
+bool gesture_pos_on
+int64 person_pos
+int64 gesture_pos

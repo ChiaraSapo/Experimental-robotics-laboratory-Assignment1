@@ -7,21 +7,17 @@
 # sends output in output
 
 import random
+from Exp_lab_assignments.srv import mic_on
+import rospy
 
 
 def user_says():
-    var = random.randrange(1, 4)
-    var = 1
-    if var == 1:
-        str = 'go to 1 2'
-    elif var == 2:
-        str = 'hey buddy'
-    elif var == 3:
-        str = 'play'
-    return str
+    var = random.choice(['go to 5 4', 'go to 3 7', 'hey buddy', 'play'])
+    return var
 
 
-def dialog_manager(word_command):
+def dialog_manager():
+    woord_command = user_says()
     if word_command == 'hey buddy' or word_command == 'play':
         output = 'request_to_play'
     elif 'go' in word_command and 'to' in word_command:
@@ -35,14 +31,13 @@ def dialog_manager(word_command):
     return output
 
 
-def main():
-    rvar = random.randrange(0, 2)
-    if rvar == 0:
-        str = user_says()
-        c = dialog_manager(str)
-        print(c)
-    pass
+def mic_server():
+
+    rospy.init_node('mic_server')
+    s = rospy.Service('mic_server', mic_on, dialog_manager)
+    rospy.spin()
+    print(c)
 
 
 if __name__ == "__main__":
-    main()
+    mic_server()

@@ -1,7 +1,8 @@
 Experimental robotics laboratory Assignments
 
 
-State_manager
+State_manager:
+
 This node publishes on the command topic. It has a finite state machine composed of three different states.
 The states are hereby described:
 - SLEEP: The state publishes the "go home" command, waits a few seconds to simulate Miro's nap, then outputs the "normal command" to transition to the normal state.
@@ -10,16 +11,19 @@ The states are hereby described:
 The user action is simulated through two functions: "user says" and "user does", respectively implementing speech commands and postion/gesture commadns.
 
 
-Geometry grounding
+Geometry grounding:
+
 It subscribes to the command topic and analyzes the the command it receives: 
 - if it is a "go to posx posy" command, it estrapolates the coordinates from the command string 
 - if it is a "go home" command, it sets the home coordinates, which are saved in the ros parameter server.
 - if it is a "go rand" command, it computes random coordinates
 It publishes the coordinates on the "target pos" topic
 
-Planner
+Planner:
+
 It subscribes to the "target pos" topic and computes a simple trajectory to get from the current position (read from the ros param server) to the target position (read from the topic). It first reaches the x coordinate and then the y coordinate. It publishes the trajectory on the "trajectory" topic.
 
-robot motion controller
+Robot motion controller:
+
 It subscribes to the "trajectory topic" and should control the robots actuators in order to make it move. In practice it waits 2 seconds and then updates the current position and calls the function to plot the grid and the robot motion.
 

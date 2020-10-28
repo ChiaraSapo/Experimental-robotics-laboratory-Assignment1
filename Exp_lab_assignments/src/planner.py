@@ -19,12 +19,11 @@ trajectory_to_send.data = []
 def callback(data):
     # receive target_pos and current_pos
 
-    target_pos = data.data[0:2]
-    current_pos = data.data[2:4]
+    target_pos = data.data
     target_x = target_pos[0]
     target_y = target_pos[1]
-    current_x = current_pos[0]
-    current_y = current_pos[1]
+    current_x = rospy.get_param('current_posx')
+    current_y = rospy.get_param('current_posy')
 
     next_x = []
     next_y = []
@@ -43,7 +42,6 @@ def callback(data):
 
     trajectory_to_send.data = trajectory
     pub.publish(trajectory_to_send)
-    
 
 
 def planner():

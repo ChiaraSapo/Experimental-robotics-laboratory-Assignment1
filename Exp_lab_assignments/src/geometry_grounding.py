@@ -33,9 +33,6 @@ def callback(data):
     #str = 'go_home'
     #str = 'go_rand'
     #str = 'go to 7 8'
-    a = rospy.get_param('current_posx')
-    b = rospy.get_param('current_posx')
-    current_pos = np.array([a, b])  # then take it from param server
 
     my_command = [int(s) for s in stringc.split() if s.isdigit()]
     if my_command:
@@ -55,7 +52,7 @@ def callback(data):
         target_pos = [upos_command.x, upos_command.y]
     pos_to_send = Int64MultiArray()
     pos_to_send.data = []
-    pos_to_send.data = np.concatenate((target_pos, current_pos), axis=0)
+    pos_to_send.data = target_pos
     pub.publish(pos_to_send)
 
 

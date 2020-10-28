@@ -12,14 +12,14 @@ The user action is simulated through two functions: "user says" and "user does",
 
 Geometry grounding
 It subscribes to the command topic and analyzes the the command it receives: 
-- if it is a "go to posx posy" command, it estrapolates from it the coordinates 
-- if it is a "go home" command, it sets the home coordinates, which are saves in the ros parameter server.
+- if it is a "go to posx posy" command, it estrapolates the coordinates from the command string 
+- if it is a "go home" command, it sets the home coordinates, which are saved in the ros parameter server.
 - if it is a "go rand" command, it computes random coordinates
-It sends the coordinates in output.
+It publishes the coordinates on the "target pos" topic
 
-planner
-It computes a simple trajectory to get from the current position to the target position. Then it saves as current position the target position (Hypothesis: robot can always manage to reach the point, maybe remove this hypothesis later). It sends the trajectory.
+Planner
+It subscribes to the "target pos" topic and computes a simple trajectory to get from the current position (read from the ros param server) to the target position (read from the topic). It first reaches the x coordinate and then the y coordinate. It publishes the trajectory on the "trajectory" topic.
 
-robot_motion_controller
-It should control the robots actuators in order to make it move. In practice it waits 2 seconds and then sends signal goto_finished and current pos
+robot motion controller
+It subscribes to the "trajectory topic" and should control the robots actuators in order to make it move. In practice it waits 2 seconds and then updates the current position and calls the function to plot the grid and the robot motion.
 

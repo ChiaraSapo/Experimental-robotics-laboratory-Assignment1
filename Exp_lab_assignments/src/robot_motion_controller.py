@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import time
 import rospy
 from std_msgs.msg import Int64MultiArray
-
+from matplotlib import cm
 # takes as input the trajectory
 # waits 5 seconds
 # sends goto_finished
@@ -19,7 +19,7 @@ def show_grid(pos_x, pos_y):
     plt.xticks(np.arange(0, 10))
     plt.yticks(np.arange(0, 10))
 
-    plt.scatter(pos_x, pos_y)
+    plt.scatter(pos_x, pos_y, c=cm.hot(np.arange(0, len(pos_x))))
     plt.grid()
 
     plt.show(block=False)
@@ -31,18 +31,22 @@ def callback(data):
 
     # receive this as msgs
     trajectory = data.data
-    trajectory = np.reshape(trajectory, (2, len(trajectory)/2))
+    if trajectory:
 
-    # ... actuate motors...
-    time.sleep(2)
+        trajectory = np.reshape(trajectory, (2, len(trajectory)/2))
 
-    current_pos = trajectory[:, -1]
+        # ... actuate motors...
+        time.sleep(2)
 
-    # plot
-    pos_x = trajectory[0, :]
-    pos_y = trajectory[1, :]
+        #current_pos = trajectory[:, -1]
+        rospy.set_param('current_posx', int(trajectory[0, -1]))
+        rospy.set_param('current_posy', int(trajectory[1, -1]))
 
-    show_grid(pos_x, pos_y)
+        # plot
+        pos_x = trajectory[0, :]
+        pos_y = trajectory[1, :]
+
+        show_grid(pos_x, pos_y)
 
     # send goto_finished, current_pos
 

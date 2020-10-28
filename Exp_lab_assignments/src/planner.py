@@ -43,6 +43,7 @@ def callback(data):
 
     trajectory_to_send.data = trajectory
     pub.publish(trajectory_to_send)
+    
 
 
 def planner():

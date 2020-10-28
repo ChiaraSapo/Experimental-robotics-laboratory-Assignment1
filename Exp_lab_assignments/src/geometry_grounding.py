@@ -33,10 +33,12 @@ def callback(data):
     #str = 'go_home'
     #str = 'go_rand'
     #str = 'go to 7 8'
-    current_pos = [0, 0]  # then take it from param server
+    a = rospy.get_param('current_posx')
+    b = rospy.get_param('current_posx')
+    current_pos = np.array([a, b])  # then take it from param server
 
     my_command = [int(s) for s in stringc.split() if s.isdigit()]
-    if my_command:  # check was made in previous step
+    if my_command:
         stringc = my_command
         upos_command = pos_command("go_to")
         upos_command.add_data(my_command[0], my_command[1])
@@ -45,7 +47,8 @@ def callback(data):
         upos_command = pos_command(stringc)
 
     if upos_command.name == "go_home":
-        target_pos = [4, 4]
+        target_pos = [rospy.get_param(
+            'home_posx'), rospy.get_param('home_posy')]
     elif upos_command.name == "go_rand":
         target_pos = [random.randrange(10), random.randrange(10)]
     elif upos_command.name == "go_to":

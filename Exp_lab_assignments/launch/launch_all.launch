@@ -1,10 +1,10 @@
 <launch>
 
-   
-    <node pkg="math_pkg" name="planner" type="planner.py"/>
-    <node pkg="math_pkg" name="geometry_grounding" type="geometry_grounding.py"/>
-    <node pkg="math_pkg" name="robot_motion_controller" type="robot_motion_controller.py"/>
-	<!--node pkg="math_pkg" name="talker" type="test_publisher_const.py"/-->
+
+	<node pkg="Exp_lab_assignments" name="geometry_grounding" type="geometry_grounding.py"/>
+	<node pkg="Exp_lab_assignments" name="planner" type="planner.py"/>
+	<node pkg="Exp_lab_assignments" name="robot_motion_controller" type="robot_motion_controller.py"/>
+
 
 
 </launch>

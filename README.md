@@ -38,7 +38,7 @@ It subscribes to the "target pos" topic and computes a simple trajectory to get 
 
 It subscribes to the "trajectory topic" and should control the robots actuators in order to make it move. In practice it waits 2 seconds and then updates the current position and calls the function to plot the grid and the robot motion.
 
-### Messages and parameters
+## Messages and parameters
 The messages that are sent between node are of two different types: 
 - string for command topic,
 - Int64MultiArray for target_pos and trajectory topics. 

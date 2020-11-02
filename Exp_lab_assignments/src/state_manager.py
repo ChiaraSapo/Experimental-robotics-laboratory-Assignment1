@@ -29,7 +29,7 @@ def user_says(blabla):  # to test the code: give input. then REMOVE IT!!!!!!!!!!
     if blabla == 0:
         var = 'play'
     if blabla == 1:
-        var = random.choice(['go to 1 1', ''])
+        var = random.choice(['go to 5 5', ''])
     return var
 
 
@@ -39,8 +39,8 @@ def user_does():
     person_posy = random.randrange(0, 11)
     gesture_posx = random.randrange(0, 11)
     gesture_posy = random.randrange(0, 11)
-    output.add_data(person_posx, person_posy, gesture_posx, gesture_posy)
-
+    #output.add_data(person_posx, person_posy, gesture_posx, gesture_posy)
+    output.add_data(5, 5, 5, 5)
     return output
 
 
@@ -56,6 +56,8 @@ class MIRO_Sleep(smach.State):
     def execute(self, userdata):
 
         sleep_command = 'go_home'
+        while rospy.get_param('arrived') == 0:
+            time.sleep(3)
         pub.publish(sleep_command)
         time.sleep(6)
 
@@ -77,6 +79,8 @@ class MIRO_Normal(smach.State):
                 return c
             else:
                 normal_command = 'go_rand'
+                while rospy.get_param('arrived') == 0:
+                    time.sleep(3)
                 pub.publish(normal_command)
                 time.sleep(5)
                 if random.randrange(0, 5) == 1:
@@ -96,6 +100,8 @@ class MIRO_Play(smach.State):
             user_camera = user_does()
             user_position = "go to %d %d" % (
                 user_camera.person_posx, user_camera.person_posy)
+            while rospy.get_param('arrived') == 0:
+                time.sleep(3)
             pub.publish(user_position)
             time.sleep(5)
             user_command = user_says(1)
@@ -104,6 +110,8 @@ class MIRO_Play(smach.State):
                              for s in user_command.split() if s.isdigit()]
                 if len(check_int) != 2:
                     print('error')
+                while rospy.get_param('arrived') == 0:
+                    time.sleep(3)
                 pub.publish(user_command)
                 time.sleep(6)
             elif user_command == 'hey buddy' or user_command == 'play':
@@ -112,6 +120,8 @@ class MIRO_Play(smach.State):
                 user_gesture = user_does()
                 user_command = "go to %d %d" % (
                     user_camera.gesture_posx, user_camera.gesture_posy)
+                while rospy.get_param('arrived') == 0:
+                    time.sleep(3)
                 pub.publish(user_command)
         c = 'normal_command'
         return c
@@ -123,6 +133,7 @@ def main():
     rospy.set_param('current_posy', 0)
     rospy.set_param('home_posx', 0)
     rospy.set_param('home_posy', 0)
+    rospy.set_param('arrived', 1)
     # Create a SMACH state machine
     sm = smach.StateMachine(outcomes=['container_interface'])
 

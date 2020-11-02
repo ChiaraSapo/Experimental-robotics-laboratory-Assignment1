@@ -46,7 +46,6 @@ def callback(data):
 
 def planner():
     rospy.init_node('planner', anonymous=True)
-    
 
     rospy.Subscriber("target_pos", Int64MultiArray, callback)
 

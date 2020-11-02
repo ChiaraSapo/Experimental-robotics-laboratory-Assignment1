@@ -33,7 +33,7 @@ def callback(data):
     #str = 'go_home'
     #str = 'go_rand'
     #str = 'go to 7 8'
-
+    
     my_command = [int(s) for s in stringc.split() if s.isdigit()]
     if my_command:
         stringc = my_command

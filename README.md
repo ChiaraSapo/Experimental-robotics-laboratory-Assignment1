@@ -12,7 +12,7 @@ The architecture is composed of four nodes. One of them, the state_manager,  imp
 This node publishes on the command topic. It has a finite state machine composed of three different states:
 
 <p align="center">
-  <img height="500" width="500" src="https://github.com/andreabradpitto/SofAr-project/blob/master/Images%20and%20multimedia/Image.jpeg?raw=true "Title"">
+  <img height="500" width="500" src="https://github.com/ChiaraSapo/Experimental-robotics-laboratory-Assignments/blob/master/Exp_lab_assignments/images/Screenshot%20from%202020-10-29%2008-36-49.png?raw=true "Title"">
 </p>
 
 The states are hereby described:

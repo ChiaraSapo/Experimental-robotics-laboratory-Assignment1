@@ -78,22 +78,21 @@ This will install the package, then the user will be asked if he/she wants to se
 
 ## Working hypoteses
 The user: 
-- In order to play, the user must first call the robot by saying "Hey buddy" or "Play". Notice: more complex commands were not implemented since I don't know the level of confidence at which the robot understands human speech. I just chose a few simple words in order to increase the probability for the dog to hear them.
-- The desired location can be given by voice or by gesture. The robot first listens, then looks at the gesture, so the priority is given to speech commands.
+- In order to play, the user must first call the robot by saying "Hey buddy" or "Play". Notice: I did not implement more complex commands since I don't know the level of confidence at which the robot understands human speech. I just chose a few simple words in order to increase the probability for the dog to hear them correctly.
+- The desired location can be given by voice or by hand gesture. The robot first listens, then looks at the gesture, so the priority is given to speech commands.
 
 The robot:
-- The robot usually wanders around if nothing happens.
-- After a certain time (a number n of loops) it goes to sleep, in order to simulate the sleep wake cycle. However, it could also feel sleepy at random moments of the day (in this case of the loop) and go to the sleep.
-- If the robot is called by the user and then the user says nothing, it just waits a while for a command. If there is no command, it goes back to wandering.
-- During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. However, it could also feel bored/tired at random moments of the play phase (in this case of the loop) and stop playing before the time is finished.
+- The robot usually wanders around if nothing happens and, after a certain time (a number n of loops), it goes to sleep, in order to simulate the sleep wake cycle. However, it could also feel sleepy at random moments and go to the sleep.
+- During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. However, it could also feel tired at random moments of the play phase and stop playing before the time is finished. The probability that this happens is half the one that this happens in normal state, since play time is supposedly engaging.
 
 The grid:
 - The grid on which the robot moves is limited, and the dog can't go outside of it.
 - The human can move in the same grid, and has the same location limitations as the robot.
-- The kennel's position is fixed in position 4.
+- The kennel's position is fixed in position 3,3.
+- The initial position is fixed in position 0,0.
 
 ## System's limitations
-- The simulation environment needs to be improved. At the moment it uses a simple matplotlib plot, which is useful to properly see the grid and the successive positions, but needs to close each plot in order to show the successive one.
+- A simulation environment could be added.
 - The code supports few user commands and understands "go to 1 2" but wouldn't understand "go to one two" for example
 - The user can't interface with the robot via shell, for example, since commands are pre defined inside the code.
 

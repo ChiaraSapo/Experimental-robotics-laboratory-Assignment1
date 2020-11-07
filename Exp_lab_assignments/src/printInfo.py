@@ -7,7 +7,7 @@ import time
 
 def printer():
     """!
-    Prints as loginfo the important parameters of the code: state, command, person position, robot position
+    Prints the important parameters as loginfo: state, command, person position, robot position
     """
     s = x = c = p = -1  # y not needed, comes together with x
     rospy.init_node('printer')

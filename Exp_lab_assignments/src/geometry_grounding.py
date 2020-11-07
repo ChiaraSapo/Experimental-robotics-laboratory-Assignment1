@@ -9,15 +9,14 @@ from std_msgs.msg import Int64MultiArray
 
 
 pub = rospy.Publisher('target_pos', Int64MultiArray, queue_size=10)
+pos_to_send = Int64MultiArray()
+pos_to_send.data = []
 
 
 def callback(data):
     """!
     Callback function that computes the command to send to the planner
     """
-
-    pos_to_send = Int64MultiArray()
-    pos_to_send.data = []
 
     stringc = str(data.data)
     # Save positions in the command, if any

@@ -17,11 +17,7 @@ trajectory_to_send.data = []
 
 
 def callback(data):
-    """!
-    Callback function that computes the trajectory to go from the current robot 
-    position to the next desired positon. 
-    It then publishes the trajectory on the trajectory topic.
-    """
+    # receive target_pos and current_pos
 
     target_pos = data.data
     target_x = target_pos[0]
@@ -49,9 +45,6 @@ def callback(data):
 
 
 def planner():
-    """!
-    Ros node that subscribes to the target_pos topic.
-    """
     rospy.init_node('planner', anonymous=True)
 
     rospy.Subscriber("target_pos", Int64MultiArray, callback)

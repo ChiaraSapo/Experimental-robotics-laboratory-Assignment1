@@ -6,65 +6,94 @@ import matplotlib.pyplot as plt
 import time
 import rospy
 from std_msgs.msg import Int64MultiArray
+from std_msgs.msg import Bool
 from matplotlib import cm
+from geometry_msgs.msg import Twist
+import sys
+import math
+from nav_msgs.msg import Odometry
+from tf.transformations import euler_from_quaternion
 # takes as input the trajectory
 # waits 5 seconds
 # sends goto_finished
 
-
-def show_grid(pos_x, pos_y):
-    """!
-    Plots the robot trajectory using pyplot.
-    """
-
-    fig = plt.figure()
-    plt.axis([0, 10, 0, 10])
-    plt.xticks(np.arange(0, 10))
-    plt.yticks(np.arange(0, 10))
-
-    plt.scatter(pos_x, pos_y, c=cm.hot(np.arange(0, len(pos_x))))
-    plt.grid()
-
-    plt.show(block=False)
-    plt.pause(4)
-    plt.close()
+pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
 
-def callback(data):
-    """!
-    Callback data that simulates the actuation of the robot's motors.
-    """
+curr_x = 0
+curr_y = 0
+theta = 0
 
-    # receive this as msgs
-    trajectory = data.data
 
-    if trajectory:
+def EuclidianDistance(x_goal, y_goal, x_real, y_real):
+    return math.sqrt(math.pow((x_goal-x_real), 2) +
+                     math.pow((y_goal-y_real), 2))
 
-        trajectory = np.reshape(trajectory, (2, len(trajectory)/2))
 
-        # ... actuate motors...
-        time.sleep(2)
+def odom_callback(data):
+    global curr_x
+    global curr_y
+    global theta
+    curr_x = data.pose.pose.position.x
+    curr_y = data.pose.pose.position.y
 
-        #current_pos = trajectory[:, -1]
-        rospy.set_param('current_posx', int(trajectory[0, -1]))
-        rospy.set_param('current_posy', int(trajectory[1, -1]))
+    rot_q = data.pose.pose.orientation
+    (roll, pitch, theta) = euler_from_quaternion(
+        [rot_q.x, rot_q.y, rot_q.z, rot_q.w])
 
-        # plot
-        pos_x = trajectory[0, :]
-        pos_y = trajectory[1, :]
 
-        if rospy.get_param('see_plot') == 1:
-            show_grid(pos_x, pos_y)
+def traj_callback(data):
+    global curr_x
+    global curr_y
+    global theta
+
+    target_pos = data.data
+    target_x = target_pos[0]
+    target_y = target_pos[1]
+
+    vel = Twist()
+    vel.linear.x = 0
+    vel.linear.y = 0
+    vel.linear.z = 0
+    vel.angular.x = 0
+    vel.angular.y = 0
+    vel.angular.z = 0
+
+    rospy.logerr('I want to go to %d %d', target_x, target_y)
+
+    while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.2:
+
+        rospy.Subscriber('odom', Odometry, odom_callback)
+        rospy.logerr('I see we are in %f %f', curr_x, curr_y)
+
+        # omni
+        vel.linear.x = (target_x-curr_x)
+        vel.linear.y = (target_y-curr_y)
+
+        # diff
+        #vel.linear.x = EuclidianDistance(target_x, target_y, curr_x, curr_y)
+        #vel.angular.z = theta
+
+        pub.publish(vel)
+
+    # omni
+    vel.linear.x = 0
+    vel.linear.y = 0
+
+    # diff
+    #vel.linear.x = 0
+    #vel.angular.z = 0
+
+    pub.publish(vel)
+    time.sleep(2)
+
 
 
 def robot_motion_controller():
-    """!
-    Ros node that subscribes to the trajectory topic.
-    """
 
     rospy.init_node('robot_motion_controlller', anonymous=True)
 
-    rospy.Subscriber("trajectory", Int64MultiArray, callback)
+    rospy.Subscriber("target_pos", Int64MultiArray, traj_callback)
 
     rospy.spin()
     pass

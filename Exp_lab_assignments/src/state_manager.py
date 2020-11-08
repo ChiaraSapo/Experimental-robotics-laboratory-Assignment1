@@ -6,14 +6,8 @@ import smach
 import smach_ros
 import time
 import random
-import numpy as np
 from std_msgs.msg import String
 import matplotlib.pyplot as plt
-
-
-pub = rospy.Publisher('command', String, queue_size=10)
-
-LOOPS = 6
 
 
 class coordinates_from_picture:
@@ -30,38 +24,29 @@ class coordinates_from_picture:
         self.gesture_posy = img_gesture_posy
 
 
-def user_says(stateCalling):
-    """!
-    Simulates the user's voice commands. 
-    @param stateCalling: which state the robot is in
-    @return userVoice: user command
-    """
+def user_says(blabla):
     # to test the code: give input. The user will never say
     # # play in play or go to to in normal:
-    # done to save time in testing phase!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # done to save time in testing phase
 
-    comm = "go to %d %d" % (random.randrange(0, 11), random.randrange(0, 11))
-    if stateCalling == 0:  # normal
-        userVoice = random.choice(['play', '', 'hey buddy'])
-    if stateCalling == 1:  # play
-        userVoice = comm
-    return userVoice
+    if blabla == 0:  # normal
+        var = random.choice(['play', ''])
+    if blabla == 1:  # play
+        var = random.choice(['go to 5 5', ''])
+    return var
 
 
 def user_does():
-    """!
-    Simulates the user's voice position and gesture. 
-    @return userBody: user position and gesture
-    """
-    userBody = coordinates_from_picture('img1')
+    output = coordinates_from_picture('img1')
     person_posx = random.randrange(0, 11)
     person_posy = random.randrange(0, 11)
     gesture_posx = random.randrange(0, 11)
     gesture_posy = random.randrange(0, 11)
-    userBody = np.array([person_posx, person_posy, gesture_posx,
-                         gesture_posy])
+    output.add_data(person_posx, person_posy, gesture_posx, gesture_posy)
+    return output
 
-    return userBody
+
+pub = rospy.Publisher('command', String, queue_size=10)
 
 
 class MIRO_Sleep(smach.State):
@@ -71,27 +56,18 @@ class MIRO_Sleep(smach.State):
                              outcomes=['normal_command'])
 
     def execute(self, userdata):
-        """!
-        Smach machine state sleep: 
-        Publishes "go home" command, waits ("sleeps") and outputs command to enter normal state
-        @return c: command to switch between states.
-        """
 
         # Set state parameter
         rospy.set_param('state', 'SLEEP STATE')
         # Give command home
         sleep_command = 'go_home'
         time.sleep(3)
-
-        # Set command parameter
-        rospy.set_param('command', sleep_command)
-        time.sleep(3)
-
         # Publish sleep command
         pub.publish(sleep_command)
+        # Set command parameter
+        rospy.set_param('command', sleep_command)
 
         time.sleep(6)
-
         # Change state
         c = 'normal_command'
         return c
@@ -104,41 +80,36 @@ class MIRO_Normal(smach.State):
                              outcomes=['sleep_command', 'play_command'])
 
     def execute(self, userdata):
-        """!
-        Smach machine state normal: 
-        Listens to user: if user says "Play" or "Hey buddy" it outputs command to enter play state.
-        If user says nothing, it goes to random positions for a while (n loops) then outputs command to enter sleep state.
-        @return c: command to switch between states.
-        """
 
         # Set state parameter
         rospy.set_param('state', 'NORMAL')
 
-        for i in range(0, LOOPS):
+        for i in range(0, 5):
             # Checks if user is speaking
             user_command = user_says(0)
+
             # If user is calling MIRO, enter play state
-            if user_command == 'hey buddy' or user_command == 'play':
-                c = 'play_command'
-                return c
+            # if user_command == 'hey buddy' or user_command == 'play':
+            #    c = 'play_command'
+            #    return c
 
             # Else wander around
-            else:
-                normal_command = 'go_rand'
-                time.sleep(3)
-                # Set command parameter
-                rospy.set_param('command', normal_command)
+            # else:
+            normal_command = 'go_rand'
+            time.sleep(3)
+            # Publish sleep command
+            pub.publish(normal_command)
+            time.sleep(3)
 
-                time.sleep(3)
-                # Publish sleep command
-                pub.publish(normal_command)
-                time.sleep(3)
+            # Set command parameter
+            rospy.set_param('command', normal_command)
 
-                # Randomly decide to sleep, enter sleep state
+            time.sleep(3)
+
+            # Randomly decide to sleep, enter sleep state
             if random.randrange(0, 5) == 1:
                 c = 'sleep_command'
                 return c
-
         return 'sleep_command'
 
 
@@ -149,34 +120,29 @@ class MIRO_Play(smach.State):
                              outcomes=['normal_command'])
 
     def execute(self, userdata):
-        """!
-        Smach machine state play: 
-        Looks at user, saves his coordinates as next position, publishes them (goes toward the human).
-        It then listens to the user. If user says "go to posx posy", publishes the coordinates (goes to the point).
-        If user says "Hey buddy" or "Play" it waits. If user says nothing, it looks for the user gesture to go somewhere, 
-        and publishes the coordinate he receives (goes to the point).
-        This repeates for a while (n loops) then the robot enters normal state again.
-        @return c: command to switch between states.
-        """
-
         # Set state parameter
         rospy.set_param('state', 'PLAY STATE')
 
-        for i in range(0, LOOPS):
+        for i in range(0, 5):
 
             # Check where user is (assumption:he is there, since he called MIRO)
             user_camera = user_does()
             # Save user position
             user_position = "go to %d %d" % (
-                user_camera[0], user_camera[1])
+                user_camera.person_posx, user_camera.person_posy)
 
-            # Set command parameter
-            time.sleep(3)
-            rospy.set_param('command', user_position)
-            time.sleep(3)
+            # Set user position parameter
+            rospy.set_param('person_posx', user_camera.person_posx)
+            rospy.set_param('person_posy', user_camera.person_posy)
 
+            time.sleep(3)
             # Go to user
             pub.publish(user_position)
+            time.sleep(3)
+
+            # Set command parameter
+            rospy.set_param('command', user_position)
+            time.sleep(3)
 
             # Listen to user
             user_command = user_says(1)
@@ -190,13 +156,13 @@ class MIRO_Play(smach.State):
                     rospy.logerr('Wrong command')
                     break
 
-                # Set command parameter
                 time.sleep(3)
-                rospy.set_param('command', user_command)
-                time.sleep(3)
-
                 # ...Go to position
                 pub.publish(user_command)
+                time.sleep(3)
+
+                # Set command parameter
+                rospy.set_param('command', user_command)
                 time.sleep(3)
 
             # If user says he wants to play: wait
@@ -208,16 +174,15 @@ class MIRO_Play(smach.State):
                 # Look at user gesture
                 user_gesture = user_does()
                 user_command = "go to %d %d" % (
-                    user_gesture[2], user_gesture[3])
+                    user_camera.gesture_posx, user_camera.gesture_posy)
 
-                # Set command parameter
                 time.sleep(3)
-                rospy.set_param('command', user_command)
-                time.sleep(3)
-
                 # Go to position
                 pub.publish(user_command)
+                time.sleep(3)
 
+                # Set command parameter
+                rospy.set_param('command', user_command)
                 time.sleep(3)
 
         c = 'normal_command'
@@ -225,16 +190,11 @@ class MIRO_Play(smach.State):
 
 
 def main():
-    """!
-    Ros node that implements a state machine with three states: sleep, play, normal.
-    It also initializes the current position and home parameters.
-    """
     rospy.init_node('state_manager')
 
     # Set parameters
-    # init current pos
-    rospy.set_param('current_posx', 0)
-    rospy.set_param('current_posy', 0)
+    # current pos: set std if not odom!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     # home pos
     rospy.set_param('home_posx', 3)
     rospy.set_param('home_posy', 3)
@@ -244,13 +204,11 @@ def main():
 
     with sm:
         # Add states to the container
-
         smach.StateMachine.add('SLEEP', MIRO_Sleep(),
                                transitions={'normal_command': 'NORMAL'})
         smach.StateMachine.add('NORMAL', MIRO_Normal(),
                                transitions={'sleep_command': 'SLEEP',
                                             'play_command': 'PLAY'})
-
         smach.StateMachine.add('PLAY', MIRO_Play(),
                                transitions={'normal_command': 'NORMAL'})
 

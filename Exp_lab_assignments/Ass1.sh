@@ -37,26 +37,19 @@ a=$(find "$(pwd)" -name  *.py )
 chmod +x $a
 echo "All .py files activated!"
 
-
-
-
-
 # files to run
 gnome-terminal -x sh -c "roscore; bash"
-
-echo "If you want to see the robot successive postitions in a pyplot figure write 'yes'"
-read b 
-if [[ $b == "yes" ]] ; then 
-	gnome-terminal -x sh -c "rosparam set see_plot 1"
-fi
-
 gnome-terminal -x sh -c "rosrun smach_viewer smach_viewer.py; bash"
 
+gnome-terminal -x sh -c "rosrun stage_ros stageros world/MIRO.world; bash"
+gnome-terminal -x sh -c "rostopic echo /odom; bash"
 echo "Starting state machine"
 gnome-terminal -x sh -c "rosrun Exp_lab_assignments state_manager.py; bash"
-gnome-terminal -x sh -c "rosrun Exp_lab_assignments printInfo.py; bash"
+#gnome-terminal -x sh -c "rosrun Exp_lab_assignments printInfo.py; bash"
 
 roslaunch --wait Exp_lab_assignments launch_all.launch
+
+
 
 kill $(ps aux | grep "sh -c rosrun" | tr -s ' '| cut -d ' ' -f 2)
 kill $(ps aux | grep "sh -c roslaunch" | tr -s ' '| cut -d ' ' -f 2)

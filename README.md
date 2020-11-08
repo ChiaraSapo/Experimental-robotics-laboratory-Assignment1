@@ -44,13 +44,11 @@ It subscribes to the "command" topic and analyzes the the command it receives:
 - if it is a "go rand" command, it computes random coordinates.
 It publishes the coordinates on the "target pos" topic.
 
-### Planner:
-
-It subscribes to the "target pos" topic and computes a simple trajectory to get from the current position (read from the ros param server) to the target position. It first reaches the x coordinate and then the y coordinate. It publishes the trajectory on the "trajectory" topic.
 
 ### Robot motion controller:
 
-It subscribes to the "trajectory" topic and should control the robots actuators in order to make it move. In practice it waits a few seconds, updates the current position and, if the see_plot parameter is set equal to 1, it calls the function to plot the grid and the robot motion.
+It subscribes to the "odom" topic from stage and to the "target_pos" topic. It calculates the successive positions of the robot from the current to the next postion.
+
 
 ### Print info:
 Prints the package parameters on terminal through loginfo.

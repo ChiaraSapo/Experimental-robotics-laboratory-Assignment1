@@ -193,8 +193,6 @@ def main():
     rospy.init_node('state_manager')
 
     # Set parameters
-    # current pos: set std if not odom!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     # home pos
     rospy.set_param('home_posx', 3)
     rospy.set_param('home_posy', 3)

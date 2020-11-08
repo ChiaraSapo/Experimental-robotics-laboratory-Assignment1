@@ -47,7 +47,7 @@ It publishes the coordinates on the "target pos" topic.
 
 ### Robot motion controller:
 
-It subscribes to the "odom" topic from stage and to the "target_pos" topic. It calculates the successive positions of the robot from the current to the next postion.
+It subscribes to the "odom" topic from stage and to the "target_pos" topic. It calculates the successive positions of the robot from the current to the next postion. It then publishes the velocity on the "cmd_vel" topic of stage.
 
 
 ### Print info:

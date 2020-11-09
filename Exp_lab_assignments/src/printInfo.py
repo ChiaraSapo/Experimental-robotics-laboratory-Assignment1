@@ -28,6 +28,7 @@ def printer():
         #             'The current person position is: %d %d', per_x, per_y)
         #         p = per_x
 
+        # and rospy.has_param('current_posx') and rospy.has_param('arrived'):
         if rospy.has_param('command'):
             command = rospy.get_param('command')
             # assumption: if go rand: prints once
@@ -35,14 +36,16 @@ def printer():
                 rospy.loginfo(
                     'The received command is: %s', command)
                 c = command
-            if rospy.has_param('current_posx') and rospy.has_param('arrived'):
-                if rospy.get_param('arrived') == 1:
-                    curr_x = rospy.get_param('current_posx')
-                    curr_y = rospy.get_param('current_posy')
-                    if curr_x != x:
-                        rospy.loginfo('The robot has just arrived in: %d %d',
-                                      curr_x, curr_y)
-                        x = curr_x
+        
+        if rospy.has_param('arrived') and rospy.has_param('current_posx'):
+
+            if rospy.get_param('arrived') == 1:
+                curr_x = rospy.get_param('current_posx')
+                curr_y = rospy.get_param('current_posy')
+                if curr_x != x:
+                    rospy.loginfo('The robot has just arrived in: %d %d',
+                                  curr_x, curr_y)
+                    x = curr_x
 
 
 if __name__ == '__main__':

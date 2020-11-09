@@ -31,6 +31,7 @@ def callback(data):
     pos_to_send.data = []
 
     stringc = str(data.data)
+
     # Save positions in the command, if any
     my_command = [int(s) for s in stringc.split() if s.isdigit()]
 
@@ -42,12 +43,13 @@ def callback(data):
     elif stringc == "go_home":
         pos_to_send.data = [rospy.get_param(
             'home_posx'), rospy.get_param('home_posy')]
-        rospy.logerr('Geom read home== %d', pos_to_send.data[1])
 
     elif stringc == "go_rand":
         pos_to_send.data = [random.randrange(10), random.randrange(10)]
 
     pub.publish(pos_to_send)
+
+
 
 
 def geometry_grounding():

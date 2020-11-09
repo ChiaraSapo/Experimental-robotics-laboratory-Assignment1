@@ -8,6 +8,7 @@ import time
 import random
 from std_msgs.msg import String
 import matplotlib.pyplot as plt
+import numpy as np
 
 pub = rospy.Publisher('command', String, queue_size=10)
 
@@ -28,7 +29,7 @@ class coordinates_from_picture:
         self.gesture_posy = img_gesture_posy
 
 
-def user_says(blabla):
+def user_says(stateCalling):
     """!
     Simulates the user's voice commands. 
     @param stateCalling: which state the robot is in
@@ -86,9 +87,6 @@ class MIRO_Sleep(smach.State):
         sleep_command = 'go_home'
         time.sleep(3)
 
-        # Set command parameter
-        rospy.set_param('command', sleep_command)
-
         # Publish sleep command
         pub.publish(sleep_command)
         time.sleep(4)
@@ -132,9 +130,6 @@ class MIRO_Normal(smach.State):
 
                 normal_command = 'go_rand'
                 time.sleep(3)
-
-                # Set command parameter
-                rospy.set_param('command', normal_command)
 
                 # Publish sleep command
                 pub.publish(normal_command)
@@ -183,8 +178,6 @@ class MIRO_Play(smach.State):
             while rospy.get_param('arrived') == 0:
                 time.sleep(1)
 
-            # Set command parameter
-            rospy.set_param('command', user_position)
             time.sleep(3)
 
             # Go to user
@@ -199,18 +192,15 @@ class MIRO_Play(smach.State):
                 check_int = [int(s)
                              for s in user_command.split() if s.isdigit()]
                 # ... and he actually gives you two coordinates...
-                
+
                 if len(check_int) != 2:
                     rospy.logerr('Wrong command')
                     break
 
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
-                
-                # Set command parameter
-                rospy.set_param('command', user_command)
                 time.sleep(3)
-                
+
                 # ...Go to position
                 pub.publish(user_command)
                 time.sleep(3)
@@ -228,10 +218,7 @@ class MIRO_Play(smach.State):
 
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
-                
-                # Set command parameter
-                rospy.set_param('command', user_command)
-                time.sleep(3)
+
 
                 # Go to position
                 pub.publish(user_command)

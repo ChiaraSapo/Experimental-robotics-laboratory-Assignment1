@@ -75,7 +75,7 @@ def traj_callback(data):
     vel.angular.y = 0
     vel.angular.z = 0
 
-    rospy.logerr('I want to go to %d %d', target_x, target_y)
+    rospy.loginfo('I want to go to %d %d', target_x, target_y)
 
     while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.01:
 
@@ -85,7 +85,14 @@ def traj_callback(data):
 
         pub.publish(vel)
 
-    rospy.logerr('I arrived in %f %f', curr_x, curr_y)
+    stringc = "go to %d %d" % (target_x, target_y)
+
+    # Set command parameter
+    rospy.set_param('command', stringc)
+
+    rospy.set_param('current_posx', curr_x)
+    rospy.set_param('current_posy', curr_y)
+    rospy.loginfo('I arrived in %f %f', curr_x, curr_y)
 
     # omni
     vel.linear.x = 0
@@ -95,9 +102,6 @@ def traj_callback(data):
     time.sleep(2)
 
     rospy.set_param('arrived', 1)
-
-    rospy.set_param('current_posx', curr_x)
-    rospy.set_param('current_posy', curr_y)
 
 
 def robot_motion_controller():

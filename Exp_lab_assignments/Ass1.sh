@@ -41,11 +41,11 @@ echo "All .py files activated!"
 gnome-terminal -x sh -c "roscore; bash"
 gnome-terminal -x sh -c "rosrun smach_viewer smach_viewer.py; bash"
 
-gnome-terminal -x sh -c "rosrun stage_ros stageros world/MIRO.world; bash"
-gnome-terminal -x sh -c "rostopic echo /odom; bash"
+gnome-terminal -x sh -c "rosrun stage_ros stageros $(rospack find Exp_lab_assignments)/world/MIRO.world
+; bash"
 echo "Starting state machine"
 gnome-terminal -x sh -c "rosrun Exp_lab_assignments state_manager.py; bash"
-#gnome-terminal -x sh -c "rosrun Exp_lab_assignments printInfo.py; bash"
+gnome-terminal -x sh -c "rosrun Exp_lab_assignments printInfo.py; bash"
 
 roslaunch --wait Exp_lab_assignments launch_all.launch
 

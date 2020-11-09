@@ -13,9 +13,7 @@ import sys
 import math
 from nav_msgs.msg import Odometry
 from tf.transformations import euler_from_quaternion
-# takes as input the trajectory
-# waits 5 seconds
-# sends goto_finished
+
 
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
@@ -26,11 +24,23 @@ theta = 0
 
 
 def EuclidianDistance(x_goal, y_goal, x_real, y_real):
+    '''
+    Calculates the euclidean distance between two given points
+    @param x_goal: point 1 coordinate x
+    @param y_goal: point 1 coordinate y
+    @param x_real: point 2 coordinate x
+    @param y_real: point 2 coordinate y
+    @return euclidean distance
+    '''
+
     return math.sqrt(math.pow((x_goal-x_real), 2) +
                      math.pow((y_goal-y_real), 2))
 
 
 def odom_callback(data):
+    """!
+    Callback function for the robot position.
+    """
     global curr_x
     global curr_y
     global theta
@@ -43,6 +53,12 @@ def odom_callback(data):
 
 
 def traj_callback(data):
+    """!
+    Callback function for the target position. It computes the velocity to send
+    to the cmd_vel topic, by considering an omniwheel robot. when the robot has 
+    arrived at desired position, publishes vel=0 and sets the "arrived" and current
+    robot position parameters.
+    """
     global curr_x
     global curr_y
     global theta
@@ -61,41 +77,43 @@ def traj_callback(data):
 
     rospy.logerr('I want to go to %d %d', target_x, target_y)
 
-    while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.2:
-
-        rospy.Subscriber('odom', Odometry, odom_callback)
-        rospy.logerr('I see we are in %f %f', curr_x, curr_y)
+    while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.01:
 
         # omni
         vel.linear.x = (target_x-curr_x)
         vel.linear.y = (target_y-curr_y)
 
-        # diff
-        #vel.linear.x = EuclidianDistance(target_x, target_y, curr_x, curr_y)
-        #vel.angular.z = theta
-
         pub.publish(vel)
+
+    rospy.logerr('I arrived in %f %f', curr_x, curr_y)
 
     # omni
     vel.linear.x = 0
     vel.linear.y = 0
 
-    # diff
-    #vel.linear.x = 0
-    #vel.angular.z = 0
-
     pub.publish(vel)
     time.sleep(2)
 
+    rospy.set_param('arrived', 1)
+
+    rospy.set_param('current_posx', curr_x)
+    rospy.set_param('current_posy', curr_y)
 
 
 def robot_motion_controller():
+    """!
+    Ros node that subscribes to the target_pos and odom topic and publishes on the 
+    cmd_vel topic.
+    """
 
     rospy.init_node('robot_motion_controlller', anonymous=True)
 
     rospy.Subscriber("target_pos", Int64MultiArray, traj_callback)
 
+    rospy.Subscriber('odom', Odometry, odom_callback)
+
     rospy.spin()
+
     pass
 
 

@@ -2,13 +2,12 @@
 
 ## Introduction
 The package Exp_Lab_Assignments simulates a robot dog (hypothetically MIRo) moving on a gridded plane. He can either sleep in his kennel, wander around or play with a simulated user. In order to play with the robot, the user has to say "Hey buddy" or "Play". If he says so, the dog approaches the person and waits for a command such as "go to 1 2", or for a pointing gesture towars a direction. It then goes to the desired location and comes back. After a while it again starts wandering around around. 
-The project is implemented with a ROS structure and written in Python.
+The project is implemented with a ROS structure, written in Python, and simulated through the ROS stage platform.
 
 ## Software architecture and state diagrams
-The architecture is composed of five nodes:
+The architecture is composed of four nodes:
 - State manager
 - Geometry grounding
-- Planner
 - Robot motion controller
 - Print Info
 The nodes are described in the following part of the readme.
@@ -63,8 +62,8 @@ The parameters used are:
 - person_posx and person_posy, which indicates the current person position. It is set by the state manager.
 - current_posx and current_posy, which represents the current position of the robot. It is initialized by the state manager, read by the planner, and updated by the robot_motion_controller. 
 - command, which indicates the current command that MIRo has to follow. It is set by the state manager and by geometry grounding.
-- see_plot, which is asked on the terminal before starting the whole package. If set, it allows to see a simple pyplot figure showing the successive robot positions.
-All the parameters, except the see_plot, are printed on screen by the printInfo node.
+
+All the parameters, are printed on screen by the printInfo node.
 
 ## How to run the code:
 Download the package in your_catkin_ws/src.

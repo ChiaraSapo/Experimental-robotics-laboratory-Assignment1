@@ -16,11 +16,10 @@ from tf.transformations import euler_from_quaternion
 
 
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-
+number = 1
 
 curr_x = 0
 curr_y = 0
-theta = 0
 
 
 def EuclidianDistance(x_goal, y_goal, x_real, y_real):
@@ -43,13 +42,9 @@ def odom_callback(data):
     """
     global curr_x
     global curr_y
-    global theta
+
     curr_x = data.pose.pose.position.x
     curr_y = data.pose.pose.position.y
-
-    rot_q = data.pose.pose.orientation
-    (roll, pitch, theta) = euler_from_quaternion(
-        [rot_q.x, rot_q.y, rot_q.z, rot_q.w])
 
 
 def traj_callback(data):
@@ -62,6 +57,7 @@ def traj_callback(data):
     global curr_x
     global curr_y
     global theta
+    global number
 
     target_pos = data.data
     target_x = target_pos[0]
@@ -75,9 +71,7 @@ def traj_callback(data):
     vel.angular.y = 0
     vel.angular.z = 0
 
-    rospy.loginfo('I want to go to %d %d', target_x, target_y)
-
-    while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.01:
+    while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.001:
 
         # omni
         vel.linear.x = (target_x-curr_x)
@@ -85,23 +79,22 @@ def traj_callback(data):
 
         pub.publish(vel)
 
-    stringc = "go to %d %d" % (target_x, target_y)
-
-    # Set command parameter
-    rospy.set_param('command', stringc)
-
-    rospy.set_param('current_posx', curr_x)
-    rospy.set_param('current_posy', curr_y)
-    rospy.loginfo('I arrived in %f %f', curr_x, curr_y)
-
     # omni
     vel.linear.x = 0
     vel.linear.y = 0
 
     pub.publish(vel)
-    time.sleep(2)
+
+    stringc = "go to %d %d" % (target_x, target_y)
+
+    # Set command parameter
+    rospy.set_param('all', [target_x, target_y, curr_x, curr_y, number])
 
     rospy.set_param('arrived', 1)
+
+    number = number+1
+
+    time.sleep(2)
 
 
 def robot_motion_controller():

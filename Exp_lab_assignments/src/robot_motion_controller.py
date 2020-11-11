@@ -16,8 +16,15 @@ from tf.transformations import euler_from_quaternion
 
 
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-number = 1
+vel = Twist()
+vel.linear.x = 0
+vel.linear.y = 0
+vel.linear.z = 0
+vel.angular.x = 0
+vel.angular.y = 0
+vel.angular.z = 0
 
+number = 1
 curr_x = 0
 curr_y = 0
 
@@ -56,40 +63,30 @@ def traj_callback(data):
     """
     global curr_x
     global curr_y
-    global theta
     global number
 
     target_pos = data.data
     target_x = target_pos[0]
     target_y = target_pos[1]
 
-    vel = Twist()
-    vel.linear.x = 0
-    vel.linear.y = 0
-    vel.linear.z = 0
-    vel.angular.x = 0
-    vel.angular.y = 0
-    vel.angular.z = 0
-
     while EuclidianDistance(target_x, target_y, curr_x, curr_y) >= 0.001:
 
-        # omni
+        # omniwheel robot
         vel.linear.x = (target_x-curr_x)
         vel.linear.y = (target_y-curr_y)
 
+        # Publish
         pub.publish(vel)
 
-    # omni
+    # omniwheel robot
     vel.linear.x = 0
     vel.linear.y = 0
 
+    # Publish
     pub.publish(vel)
-
-    stringc = "go to %d %d" % (target_x, target_y)
 
     # Set command parameter
     rospy.set_param('all', [target_x, target_y, curr_x, curr_y, number])
-
     rospy.set_param('arrived', 1)
 
     number = number+1

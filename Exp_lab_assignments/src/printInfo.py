@@ -7,17 +7,20 @@ import time
 
 def printer():
     """!
-    Prints the important parameters as loginfo: state, command, person position, robot position
+    Prints the important parameters as loginfo: state, command, robot position
     """
     s = x = -1  # y not needed, comes together with x
     rospy.init_node('printer')
 
     while not rospy.is_shutdown():
+        # Loginfo about state
         if rospy.has_param('state'):
             state = rospy.get_param('state')
             if state != s:
                 rospy.loginfo('-->The current state is: %s', state)
                 s = state
+
+        # Loginfo about command and position
         if rospy.has_param('all'):
             all = rospy.get_param('all')
             state = rospy.get_param('state')

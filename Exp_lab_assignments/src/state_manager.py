@@ -98,11 +98,10 @@ class MIRO_Sleep(smach.State):
 
         while rospy.get_param('arrived') == 0:
             time.sleep(1)
+        rospy.set_param('arrived', 0)
 
         # Give command home
         sleep_command = 'go_home'
-        # time.sleep(3)
-        rospy.set_param('arrived', 0)
 
         # Publish sleep command
         pub.publish(sleep_command)
@@ -150,11 +149,10 @@ class MIRO_Normal(smach.State):
             else:
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
+                rospy.set_param('arrived', 0)
 
                 normal_command = 'go_rand'
 
-                # time.sleep(3)
-                rospy.set_param('arrived', 0)
                 # Publish sleep command
                 pub.publish(normal_command)
                 time.sleep(3)
@@ -203,8 +201,8 @@ class MIRO_Play(smach.State):
 
             while rospy.get_param('arrived') == 0:
                 time.sleep(1)
-
             rospy.set_param('arrived', 0)
+
             # Go to user
             pub.publish(user_position)
             time.sleep(3)
@@ -224,7 +222,6 @@ class MIRO_Play(smach.State):
 
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
-
                 rospy.set_param('arrived', 0)
 
                 # ...Go to position
@@ -245,6 +242,7 @@ class MIRO_Play(smach.State):
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
                 rospy.set_param('arrived', 0)
+
                 # Go to position
                 pub.publish(user_command)
                 time.sleep(3)
@@ -262,10 +260,10 @@ def main():
     rospy.init_node('state_manager')
 
     # Set parameters
-    # home pos
+    # Home position
     rospy.set_param('home_posx', 3)
     rospy.set_param('home_posy', 3)
-
+    # Arrived
     rospy.set_param('arrived', 1)
 
     # Create a SMACH state machine

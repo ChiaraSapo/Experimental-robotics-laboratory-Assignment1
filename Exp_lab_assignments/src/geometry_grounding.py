@@ -7,11 +7,10 @@ import numpy as np
 from std_msgs.msg import String
 from std_msgs.msg import Int64MultiArray
 
-# takes as input a signal go_home, go_rand, 'go to n1 n2'
-# translates signals in (x_target, y_target)
-# sends in output (x_target, y_target)
 
 pub = rospy.Publisher('target_pos', Int64MultiArray, queue_size=10)
+pos_to_send = Int64MultiArray()
+pos_to_send.data = []
 
 
 def callback(data):
@@ -22,26 +21,26 @@ def callback(data):
     If the command is a "go rand" command, it sets the target position as random coordinates.
     It then publishes the target position.
     '''
-    pos_to_send = Int64MultiArray()
-    pos_to_send.data = []
 
-    stringc = str(data.data)
+    input_string = str(data.data)
 
     # Save positions in the command, if any
-    my_command = [int(s) for s in stringc.split() if s.isdigit()]
+    my_command = [int(s) for s in input_string.split() if s.isdigit()]
 
     # If command is a "go to" command
     if my_command:
-
         pos_to_send.data = [my_command[0], my_command[1]]
 
-    elif stringc == "go_home":
+    # If command is a "go home" command
+    elif input_string == "go_home":
         pos_to_send.data = [rospy.get_param(
             'home_posx'), rospy.get_param('home_posy')]
 
-    elif stringc == "go_rand":
+    # If command is a "go rand" command
+    elif input_string == "go_rand":
         pos_to_send.data = [random.randrange(10), random.randrange(10)]
 
+    # Publish
     pub.publish(pos_to_send)
 
 

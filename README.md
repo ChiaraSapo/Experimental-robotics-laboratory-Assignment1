@@ -69,7 +69,7 @@ All the parameters, are printed on screen by the printInfo node.
 To simulate the dog I used ROS stage. This simulator allows to represent a robot (here it is just a simple green square) that moves on a grid. 
 
 <p align="center">
-  <img height="500" width="500" src="https://github.com/ChiaraSapo/Experimental-robotics-laboratory-Assignments/blob/master/Exp_lab_assignments/images/Screenshot%20from%202020-10-29%2008-36-49.png?raw=true "Title"">
+  <img height="400"  src="https://github.com/ChiaraSapo/Experimental-robotics-laboratory-Assignments/blob/master/Exp_lab_assignments/images/Screenshot%20from%202020-11-11%2008-43-27.png?raw=true "Title"">
 </p>
 
 Specifications about robot position, appearance and mobility are specified in world/MIRO.world file. Here, for simplicity, I chose to let the robot have initial position in the origin, appear as a small green square and move as an omniwheel robot.  
@@ -93,15 +93,17 @@ The robot:
 - During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. However, it could also feel tired at random moments of the play phase and stop playing before the time is finished. The probability that this happens is half the one that this happens in normal state, since play time is supposedly engaging.
 
 The grid:
-- The grid on which the robot moves is limited, and the dog can't go outside of it.
+- The grid on which the robot moves is limited to 10x10 on the code
 - The human can move in the same grid, and has the same location limitations as the robot.
 - The kennel's position is fixed in position 3,3.
 - The initial position is fixed in position 0,0.
 
 ## System's limitations
-- A simulation environment could be added.
-- The code supports few user commands and understands "go to 1 2" but wouldn't understand "go to one two" for example
+- Sometimes the node that prints
+- The code supports few user commands and understands "go to 1 2" but wouldn't understand "go to one two" for example.
 - The user can't interface with the robot via shell, for example, since commands are pre defined inside the code.
+- The grid is limited.
+- The simulator is very simple and assumes an omniwheel robot.
 
 ## Authors
 Chiara Saporetti: chiara.saporetti@gmail.com

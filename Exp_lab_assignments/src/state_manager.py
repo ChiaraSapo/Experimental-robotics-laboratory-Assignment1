@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+
+# @file state_manager.py
+# @brief This node implements a smach state machine to simulate a dog that can sleep, play and wander around.
+
 import roslib
 import rospy
 import smach
@@ -14,41 +18,33 @@ pub = rospy.Publisher('command', String, queue_size=10)
 
 LOOPS = 3
 
-
+## Simulates a camera frame and the information it contains.
 class coordinates_from_picture:
-    '''
-    Simulates a camera frame and the information it contains.
-    '''
 
+    # Init function for coordinates_from_picture class.
     def __init__(self, name):
-        '''
-        Init function for coordinates_from_picture class.
-        '''
+
         self.person_posx = 0
         self.person_posy = 0
         self.gesture_posx = 0
         self.gesture_posx = 0
 
+    # Add data function for coordinates_from_picture class.
+    # @param img_person_posx: x coordinate of user
+    # @param img_person_posy: y coordinate of user
+    # @param img_gesture_posx: x coordinate of user gesture
+    # @param img_gesture_posy: y coordinate of user gesture
     def add_data(self, img_person_posx, img_person_posy, img_gesture_posx, img_gesture_posy):
-        '''
-        Add data function for coordinates_from_picture class.
-        '''
+
         self.person_posx = img_person_posx
         self.person_posy = img_person_posy
         self.gesture_posx = img_gesture_posx
         self.gesture_posy = img_gesture_posy
 
-
+## Simulates the user's voice commands.
+# @param stateCalling: which state the robot is in
+# @return userVoice: user command
 def user_says(stateCalling):
-    """!
-    Simulates the user's voice commands. 
-    @param stateCalling: which state the robot is in
-    @return userVoice: user command
-    """
-
-    # to test the code: give input. The user will never say
-    # # play in play or go to to in normal:
-    # done to save time in testing phase
 
     comm = "go to %d %d" % (random.randrange(0, 11), random.randrange(0, 11))
     if stateCalling == 0:  # normal
@@ -57,12 +53,12 @@ def user_says(stateCalling):
         userVoice = comm
     return userVoice
 
+# Simulates the user's voice position and gesture.
+# @return userBody: user position and gesture
+
 
 def user_does():
-    """!
-    Simulates the user's voice position and gesture. 
-    @return userBody: user position and gesture
-    """
+
     userBody = coordinates_from_picture('img1')
     person_posx = random.randrange(0, 11)
     person_posy = random.randrange(0, 11)
@@ -73,29 +69,24 @@ def user_does():
 
     return userBody
 
-
+## Sleep state of the smach machine.
 class MIRO_Sleep(smach.State):
-    '''
-    Sleep state of the smach machine.
-    '''
 
+    ## Init function for smach machine sleep state.
     def __init__(self):
-        '''
-        Init function for smach machine sleep state.
-        '''
+
         smach.State.__init__(self,
                              outcomes=['normal_command'])
 
+    ## Smach machine state sleep actions:
+    # Publishes "go home" command, waits ("sleeps") and outputs command to enter normal state
+    # @return c: command to switch between states.
     def execute(self, userdata):
-        """!
-        Smach machine state sleep actions: 
-        Publishes "go home" command, waits ("sleeps") and outputs command to enter normal state
-        @return c: command to switch between states.
-        """
 
         # Set state parameter
         rospy.set_param('state', 'SLEEP STATE')
 
+        # Wait to be ready
         while rospy.get_param('arrived') == 0:
             time.sleep(1)
         rospy.set_param('arrived', 0)
@@ -111,26 +102,20 @@ class MIRO_Sleep(smach.State):
         c = 'normal_command'
         return c
 
-
+## Normal state of the smach machine.
 class MIRO_Normal(smach.State):
-    '''
-    Normal state of the smach machine.
-    '''
 
+    ## Init function for smach machine normal state.
     def __init__(self):
-        '''
-        Init function for smach machine normal state.
-        '''
+
         smach.State.__init__(self,
                              outcomes=['sleep_command', 'play_command'])
 
+    ## Smach machine state normal actions:
+    # Listens to user: if user says "Play" or "Hey buddy" it outputs command to enter play state.
+    # If user says nothing, it goes to random positions for a while (n loops) then outputs command to enter sleep state.
+    # @return c: command to switch between states.
     def execute(self, userdata):
-        """!
-        Smach machine state normal actions: 
-        Listens to user: if user says "Play" or "Hey buddy" it outputs command to enter play state.
-        If user says nothing, it goes to random positions for a while (n loops) then outputs command to enter sleep state.
-        @return c: command to switch between states.
-        """
 
         # Set state parameter
         rospy.set_param('state', 'NORMAL')
@@ -147,13 +132,14 @@ class MIRO_Normal(smach.State):
 
             # Else wander around
             else:
+                # Wait to be ready
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
                 rospy.set_param('arrived', 0)
 
                 normal_command = 'go_rand'
 
-                # Publish sleep command
+                # Publish normal command
                 pub.publish(normal_command)
                 time.sleep(3)
 
@@ -164,29 +150,23 @@ class MIRO_Normal(smach.State):
 
         return 'sleep_command'
 
-
+## Play state of the smach machine.
 class MIRO_Play(smach.State):
-    '''
-    Play state of the smach machine.
-    '''
 
+    ## Init function for smach machine play state.
     def __init__(self):
-        '''
-        Init function for smach machine play state.
-        '''
+
         smach.State.__init__(self,
                              outcomes=['normal_command'])
 
+    ## Smach machine state play actions:
+    # Looks at user, saves his coordinates as next position, publishes them (goes toward the human).
+    # It then listens to the user. If user says "go to posx posy", publishes the coordinates (goes to the point).
+    # If user says "Hey buddy" or "Play" it waits. If user says nothing, it looks for the user gesture to go somewhere,
+    # and publishes the coordinate he receives (goes to the point).
+    # This repeates for a while (n loops) then the robot enters normal state again.
+    # @return c: command to switch between states.
     def execute(self, userdata):
-        """!
-        Smach machine state play actions: 
-        Looks at user, saves his coordinates as next position, publishes them (goes toward the human).
-        It then listens to the user. If user says "go to posx posy", publishes the coordinates (goes to the point).
-        If user says "Hey buddy" or "Play" it waits. If user says nothing, it looks for the user gesture to go somewhere, 
-        and publishes the coordinate he receives (goes to the point).
-        This repeates for a while (n loops) then the robot enters normal state again.
-        @return c: command to switch between states.
-        """
 
         # Set state parameter
         rospy.set_param('state', 'PLAY STATE')
@@ -199,6 +179,7 @@ class MIRO_Play(smach.State):
             user_position = "go to %d %d" % (
                 user_camera[0], user_camera[1])
 
+            # Wait to be ready
             while rospy.get_param('arrived') == 0:
                 time.sleep(1)
             rospy.set_param('arrived', 0)
@@ -220,6 +201,7 @@ class MIRO_Play(smach.State):
                     rospy.logerr('Wrong command')
                     break
 
+                # Wait to be ready
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
                 rospy.set_param('arrived', 0)
@@ -250,12 +232,9 @@ class MIRO_Play(smach.State):
         c = 'normal_command'
         return c
 
-
+## Ros node that implements a state machine with three states: sleep, play, normal.
+# It also initializes the home postion and the arrival parameters.
 def main():
-    """!
-    Ros node that implements a state machine with three states: sleep, play, normal.
-    It also initializes the home postion and the arrival parameters.
-    """
 
     rospy.init_node('state_manager')
 

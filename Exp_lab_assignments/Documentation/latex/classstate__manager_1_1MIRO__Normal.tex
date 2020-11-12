@@ -2,7 +2,13 @@
 \label{classstate__manager_1_1MIRO__Normal}\index{state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal@{state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal}}
 
 
-Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal\+:\nopagebreak
+Normal state of the smach machine.  
+
+
+
+
+Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -11,7 +17,8 @@ Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal\+:\nopageb
 \end{figure}
 
 
-Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal\+:\nopagebreak
+Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -22,15 +29,19 @@ Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Normal\+:\nopag
 \begin{DoxyCompactItemize}
 \item 
 def \hyperlink{classstate__manager_1_1MIRO__Normal_a36a3ee79119b52beeebd6ee8c04d9501}{\+\_\+\+\_\+init\+\_\+\+\_\+} (self)
-\item 
+\begin{DoxyCompactList}\small\item\em Init function for smach machine normal state. \end{DoxyCompactList}\item 
 def \hyperlink{classstate__manager_1_1MIRO__Normal_a4133da39ee6ec170623fc1d457b0729a}{execute} (self, userdata)
 \begin{DoxyCompactList}\small\item\em Smach machine state normal actions\+: Listens to user\+: if user says \char`\"{}\+Play\char`\"{} or \char`\"{}\+Hey buddy\char`\"{} it outputs command to enter play state. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-\begin{DoxyVerb}Normal state of the smach machine.
-\end{DoxyVerb}
- 
+Normal state of the smach machine. 
+
+
+
+Definition at line 106 of file state\+\_\+manager.\+py.
+
+
 
 \subsection{Constructor \& Destructor Documentation}
 \index{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Normal@{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Normal}!\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}}
@@ -40,9 +51,23 @@ def \hyperlink{classstate__manager_1_1MIRO__Normal_a4133da39ee6ec170623fc1d457b0
 \item[{}]{self}
 \end{DoxyParamCaption}
 )}\hypertarget{classstate__manager_1_1MIRO__Normal_a36a3ee79119b52beeebd6ee8c04d9501}{}\label{classstate__manager_1_1MIRO__Normal_a36a3ee79119b52beeebd6ee8c04d9501}
-\begin{DoxyVerb}Init function for smach machine normal state.
-\end{DoxyVerb}
- 
+
+
+Init function for smach machine normal state. 
+
+
+
+Definition at line 109 of file state\+\_\+manager.\+py.
+
+
+\begin{DoxyCode}
+109     \textcolor{keyword}{def }\hyperlink{classstate__manager_1_1MIRO__Normal_a36a3ee79119b52beeebd6ee8c04d9501}{\_\_init\_\_}(self):
+110 
+111         smach.State.\_\_init\_\_(self,
+112                              outcomes=[\textcolor{stringliteral}{'sleep\_command'}, \textcolor{stringliteral}{'play\_command'}])
+113 
+\end{DoxyCode}
+
 
 \subsection{Member Function Documentation}
 \index{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Normal@{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Normal}!execute@{execute}}
@@ -62,6 +87,48 @@ c\+: command to switch between states.
 \end{DoxyReturn}
 
 
+Definition at line 118 of file state\+\_\+manager.\+py.
+
+
+\begin{DoxyCode}
+118     \textcolor{keyword}{def }\hyperlink{classstate__manager_1_1MIRO__Normal_a4133da39ee6ec170623fc1d457b0729a}{execute}(self, userdata):
+119 
+120         \textcolor{comment}{# Set state parameter}
+121         rospy.set\_param(\textcolor{stringliteral}{'state'}, \textcolor{stringliteral}{'NORMAL'})
+122 
+123         \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(0, LOOPS):
+124 
+125             \textcolor{comment}{# Checks if user is speaking}
+126             user\_command = user\_says(0)
+127 
+128             \textcolor{comment}{# If user is calling MIRO, enter play state}
+129             \textcolor{keywordflow}{if} user\_command == \textcolor{stringliteral}{'hey buddy'} \textcolor{keywordflow}{or} user\_command == \textcolor{stringliteral}{'play'}:
+130                 c = \textcolor{stringliteral}{'play\_command'}
+131                 \textcolor{keywordflow}{return} c
+132 
+133             \textcolor{comment}{# Else wander around}
+134             \textcolor{keywordflow}{else}:
+135                 \textcolor{comment}{# Wait to be ready}
+136                 \textcolor{keywordflow}{while} rospy.get\_param(\textcolor{stringliteral}{'arrived'}) == 0:
+137                     time.sleep(1)
+138                 rospy.set\_param(\textcolor{stringliteral}{'arrived'}, 0)
+139 
+140                 normal\_command = \textcolor{stringliteral}{'go\_rand'}
+141 
+142                 \textcolor{comment}{# Publish normal command}
+143                 pub.publish(normal\_command)
+144                 time.sleep(3)
+145 
+146             \textcolor{comment}{# Randomly decide to sleep, enter sleep state}
+147             \textcolor{keywordflow}{if} random.randrange(0, 5) == 1:
+148                 c = \textcolor{stringliteral}{'sleep\_command'}
+149                 \textcolor{keywordflow}{return} c
+150 
+151         \textcolor{keywordflow}{return} \textcolor{stringliteral}{'sleep\_command'}
+152 
+\end{DoxyCode}
+
+
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/chiara/catkin\+\_\+ws/src/\+Exp\+\_\+lab\+\_\+assignments/src/state\+\_\+manager.\+py\end{DoxyCompactItemize}
+src/state\+\_\+manager.\+py\end{DoxyCompactItemize}

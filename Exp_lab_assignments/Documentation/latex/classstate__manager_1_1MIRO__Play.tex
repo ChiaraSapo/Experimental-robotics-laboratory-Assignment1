@@ -2,7 +2,13 @@
 \label{classstate__manager_1_1MIRO__Play}\index{state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play@{state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play}}
 
 
-Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play\+:\nopagebreak
+Play state of the smach machine.  
+
+
+
+
+Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -11,7 +17,8 @@ Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play\+:\nopagebre
 \end{figure}
 
 
-Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play\+:\nopagebreak
+Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -22,15 +29,19 @@ Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Play\+:\nopageb
 \begin{DoxyCompactItemize}
 \item 
 def \hyperlink{classstate__manager_1_1MIRO__Play_a863ae1958460cf6bf33faaba597fc5a2}{\+\_\+\+\_\+init\+\_\+\+\_\+} (self)
-\item 
+\begin{DoxyCompactList}\small\item\em Init function for smach machine play state. \end{DoxyCompactList}\item 
 def \hyperlink{classstate__manager_1_1MIRO__Play_a781db4be4fcbb313c46097a8fdf06275}{execute} (self, userdata)
 \begin{DoxyCompactList}\small\item\em Smach machine state play actions\+: Looks at user, saves his coordinates as next position, publishes them (goes toward the human). \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-\begin{DoxyVerb}Play state of the smach machine.
-\end{DoxyVerb}
- 
+Play state of the smach machine. 
+
+
+
+Definition at line 154 of file state\+\_\+manager.\+py.
+
+
 
 \subsection{Constructor \& Destructor Documentation}
 \index{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Play@{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Play}!\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}}
@@ -40,9 +51,23 @@ def \hyperlink{classstate__manager_1_1MIRO__Play_a781db4be4fcbb313c46097a8fdf062
 \item[{}]{self}
 \end{DoxyParamCaption}
 )}\hypertarget{classstate__manager_1_1MIRO__Play_a863ae1958460cf6bf33faaba597fc5a2}{}\label{classstate__manager_1_1MIRO__Play_a863ae1958460cf6bf33faaba597fc5a2}
-\begin{DoxyVerb}Init function for smach machine play state.
-\end{DoxyVerb}
- 
+
+
+Init function for smach machine play state. 
+
+
+
+Definition at line 157 of file state\+\_\+manager.\+py.
+
+
+\begin{DoxyCode}
+157     \textcolor{keyword}{def }\hyperlink{classstate__manager_1_1MIRO__Play_a863ae1958460cf6bf33faaba597fc5a2}{\_\_init\_\_}(self):
+158 
+159         smach.State.\_\_init\_\_(self,
+160                              outcomes=[\textcolor{stringliteral}{'normal\_command'}])
+161 
+\end{DoxyCode}
+
 
 \subsection{Member Function Documentation}
 \index{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Play@{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Play}!execute@{execute}}
@@ -62,6 +87,79 @@ c\+: command to switch between states.
 \end{DoxyReturn}
 
 
+Definition at line 169 of file state\+\_\+manager.\+py.
+
+
+\begin{DoxyCode}
+169     \textcolor{keyword}{def }\hyperlink{classstate__manager_1_1MIRO__Play_a781db4be4fcbb313c46097a8fdf06275}{execute}(self, userdata):
+170 
+171         \textcolor{comment}{# Set state parameter}
+172         rospy.set\_param(\textcolor{stringliteral}{'state'}, \textcolor{stringliteral}{'PLAY STATE'})
+173 
+174         \textcolor{keywordflow}{for} i \textcolor{keywordflow}{in} range(0, LOOPS):
+175 
+176             \textcolor{comment}{# Check where user is (assumption:he is there, since he called MIRO)}
+177             user\_camera = user\_does()
+178             \textcolor{comment}{# Save user position}
+179             user\_position = \textcolor{stringliteral}{"go to %d %d"} % (
+180                 user\_camera[0], user\_camera[1])
+181 
+182             \textcolor{comment}{# Wait to be ready}
+183             \textcolor{keywordflow}{while} rospy.get\_param(\textcolor{stringliteral}{'arrived'}) == 0:
+184                 time.sleep(1)
+185             rospy.set\_param(\textcolor{stringliteral}{'arrived'}, 0)
+186 
+187             \textcolor{comment}{# Go to user}
+188             pub.publish(user\_position)
+189             time.sleep(3)
+190 
+191             \textcolor{comment}{# Listen to user}
+192             user\_command = user\_says(1)
+193 
+194             \textcolor{comment}{# If user says to go somewhere...}
+195             \textcolor{keywordflow}{if} \textcolor{stringliteral}{'go'} \textcolor{keywordflow}{in} user\_command \textcolor{keywordflow}{and} \textcolor{stringliteral}{'to'} \textcolor{keywordflow}{in} user\_command:
+196                 check\_int = [int(s)
+197                              \textcolor{keywordflow}{for} s \textcolor{keywordflow}{in} user\_command.split() \textcolor{keywordflow}{if} s.isdigit()]
+198                 \textcolor{comment}{# ... and he actually gives you two coordinates...}
+199 
+200                 \textcolor{keywordflow}{if} len(check\_int) != 2:
+201                     rospy.logerr(\textcolor{stringliteral}{'Wrong command'})
+202                     \textcolor{keywordflow}{break}
+203 
+204                 \textcolor{comment}{# Wait to be ready}
+205                 \textcolor{keywordflow}{while} rospy.get\_param(\textcolor{stringliteral}{'arrived'}) == 0:
+206                     time.sleep(1)
+207                 rospy.set\_param(\textcolor{stringliteral}{'arrived'}, 0)
+208 
+209                 \textcolor{comment}{# ...Go to position}
+210                 pub.publish(user\_command)
+211                 time.sleep(3)
+212 
+213             \textcolor{comment}{# If user says he wants to play: wait}
+214             \textcolor{keywordflow}{elif} user\_command == \textcolor{stringliteral}{'hey buddy'} \textcolor{keywordflow}{or} user\_command == \textcolor{stringliteral}{'play'}:
+215                 time.sleep(2)
+216 
+217             \textcolor{comment}{# If user sayes nothing}
+218             \textcolor{keywordflow}{else}:
+219                 \textcolor{comment}{# Look at user gesture}
+220                 user\_gesture = user\_does()
+221                 user\_command = \textcolor{stringliteral}{"go to %d %d"} % (
+222                     user\_camera.gesture\_posx, user\_camera.gesture\_posy)
+223 
+224                 \textcolor{keywordflow}{while} rospy.get\_param(\textcolor{stringliteral}{'arrived'}) == 0:
+225                     time.sleep(1)
+226                 rospy.set\_param(\textcolor{stringliteral}{'arrived'}, 0)
+227 
+228                 \textcolor{comment}{# Go to position}
+229                 pub.publish(user\_command)
+230                 time.sleep(3)
+231 
+232         c = \textcolor{stringliteral}{'normal\_command'}
+233         \textcolor{keywordflow}{return} c
+234 
+\end{DoxyCode}
+
+
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/chiara/catkin\+\_\+ws/src/\+Exp\+\_\+lab\+\_\+assignments/src/state\+\_\+manager.\+py\end{DoxyCompactItemize}
+src/state\+\_\+manager.\+py\end{DoxyCompactItemize}

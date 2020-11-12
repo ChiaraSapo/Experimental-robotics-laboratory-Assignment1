@@ -1,5 +1,9 @@
 #!/usr/bin/python2.7
 
+## @file robot_motion_controller.py
+# @brief This node allows to move the robot from the current to the target position.
+
+
 import numpy as np
 import random
 import matplotlib.pyplot as plt
@@ -28,39 +32,27 @@ number = 1
 curr_x = 0
 curr_y = 0
 
-
+## Calculates the euclidean distance between two given points
 def EuclidianDistance(x_goal, y_goal, x_real, y_real):
-    '''
-    Calculates the euclidean distance between two given points
-    @param x_goal: point 1 coordinate x
-    @param y_goal: point 1 coordinate y
-    @param x_real: point 2 coordinate x
-    @param y_real: point 2 coordinate y
-    @return euclidean distance
-    '''
+    euclidean_dist=math.sqrt(math.pow((x_goal-x_real), 2) + math.pow((y_goal-y_real), 2))
+	
+    return euclidean_dist
 
-    return math.sqrt(math.pow((x_goal-x_real), 2) +
-                     math.pow((y_goal-y_real), 2))
-
-
+## Callback function for the robot position.
 def odom_callback(data):
-    """!
-    Callback function for the robot position.
-    """
+
     global curr_x
     global curr_y
 
     curr_x = data.pose.pose.position.x
     curr_y = data.pose.pose.position.y
 
-
+## Callback function for the target position.
+# It computes the velocity to send to the cmd_vel topic, by considering an omniwheel robot.
+# when the robot has arrived at desired position, publishes vel=0 and sets the "arrived" and
+# current robot position parameters.
 def traj_callback(data):
-    """!
-    Callback function for the target position. It computes the velocity to send
-    to the cmd_vel topic, by considering an omniwheel robot. when the robot has 
-    arrived at desired position, publishes vel=0 and sets the "arrived" and current
-    robot position parameters.
-    """
+
     global curr_x
     global curr_y
     global number
@@ -93,12 +85,8 @@ def traj_callback(data):
 
     time.sleep(2)
 
-
+## Ros node that subscribes to the target_pos and odom topic and publishes on the cmd_vel topic.
 def robot_motion_controller():
-    """!
-    Ros node that subscribes to the target_pos and odom topic and publishes on the 
-    cmd_vel topic.
-    """
 
     rospy.init_node('robot_motion_controlller', anonymous=True)
 

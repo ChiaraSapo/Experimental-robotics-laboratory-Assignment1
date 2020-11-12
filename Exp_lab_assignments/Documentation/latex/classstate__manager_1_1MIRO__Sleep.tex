@@ -2,7 +2,13 @@
 \label{classstate__manager_1_1MIRO__Sleep}\index{state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep@{state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep}}
 
 
-Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep\+:\nopagebreak
+Sleep state of the smach machine.  
+
+
+
+
+Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -11,7 +17,8 @@ Inheritance diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep\+:\nopagebr
 \end{figure}
 
 
-Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep\+:\nopagebreak
+Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep\+:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -22,15 +29,19 @@ Collaboration diagram for state\+\_\+manager.\+M\+I\+R\+O\+\_\+\+Sleep\+:\nopage
 \begin{DoxyCompactItemize}
 \item 
 def \hyperlink{classstate__manager_1_1MIRO__Sleep_a1e0695b96023b2c827bd28d9b0c11bfb}{\+\_\+\+\_\+init\+\_\+\+\_\+} (self)
-\item 
+\begin{DoxyCompactList}\small\item\em Init function for smach machine sleep state. \end{DoxyCompactList}\item 
 def \hyperlink{classstate__manager_1_1MIRO__Sleep_acda704c667aad40c16f10d7c705b1b2e}{execute} (self, userdata)
 \begin{DoxyCompactList}\small\item\em Smach machine state sleep actions\+: Publishes \char`\"{}go home\char`\"{} command, waits (\char`\"{}sleeps\char`\"{}) and outputs command to enter normal state. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
-\begin{DoxyVerb}Sleep state of the smach machine.
-\end{DoxyVerb}
- 
+Sleep state of the smach machine. 
+
+
+
+Definition at line 73 of file state\+\_\+manager.\+py.
+
+
 
 \subsection{Constructor \& Destructor Documentation}
 \index{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Sleep@{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Sleep}!\+\_\+\+\_\+init\+\_\+\+\_\+@{\+\_\+\+\_\+init\+\_\+\+\_\+}}
@@ -40,9 +51,23 @@ def \hyperlink{classstate__manager_1_1MIRO__Sleep_acda704c667aad40c16f10d7c705b1
 \item[{}]{self}
 \end{DoxyParamCaption}
 )}\hypertarget{classstate__manager_1_1MIRO__Sleep_a1e0695b96023b2c827bd28d9b0c11bfb}{}\label{classstate__manager_1_1MIRO__Sleep_a1e0695b96023b2c827bd28d9b0c11bfb}
-\begin{DoxyVerb}Init function for smach machine sleep state.
-\end{DoxyVerb}
- 
+
+
+Init function for smach machine sleep state. 
+
+
+
+Definition at line 76 of file state\+\_\+manager.\+py.
+
+
+\begin{DoxyCode}
+76     \textcolor{keyword}{def }\hyperlink{classstate__manager_1_1MIRO__Sleep_a1e0695b96023b2c827bd28d9b0c11bfb}{\_\_init\_\_}(self):
+77 
+78         smach.State.\_\_init\_\_(self,
+79                              outcomes=[\textcolor{stringliteral}{'normal\_command'}])
+80 
+\end{DoxyCode}
+
 
 \subsection{Member Function Documentation}
 \index{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Sleep@{state\+\_\+manager\+::\+M\+I\+R\+O\+\_\+\+Sleep}!execute@{execute}}
@@ -62,6 +87,34 @@ c\+: command to switch between states.
 \end{DoxyReturn}
 
 
+Definition at line 84 of file state\+\_\+manager.\+py.
+
+
+\begin{DoxyCode}
+84     \textcolor{keyword}{def }\hyperlink{classstate__manager_1_1MIRO__Sleep_acda704c667aad40c16f10d7c705b1b2e}{execute}(self, userdata):
+85 
+86         \textcolor{comment}{# Set state parameter}
+87         rospy.set\_param(\textcolor{stringliteral}{'state'}, \textcolor{stringliteral}{'SLEEP STATE'})
+88 
+89         \textcolor{comment}{# Wait to be ready}
+90         \textcolor{keywordflow}{while} rospy.get\_param(\textcolor{stringliteral}{'arrived'}) == 0:
+91             time.sleep(1)
+92         rospy.set\_param(\textcolor{stringliteral}{'arrived'}, 0)
+93 
+94         \textcolor{comment}{# Give command home}
+95         sleep\_command = \textcolor{stringliteral}{'go\_home'}
+96 
+97         \textcolor{comment}{# Publish sleep command}
+98         pub.publish(sleep\_command)
+99         time.sleep(4)
+100 
+101         \textcolor{comment}{# Change state}
+102         c = \textcolor{stringliteral}{'normal\_command'}
+103         \textcolor{keywordflow}{return} c
+104 
+\end{DoxyCode}
+
+
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/chiara/catkin\+\_\+ws/src/\+Exp\+\_\+lab\+\_\+assignments/src/state\+\_\+manager.\+py\end{DoxyCompactItemize}
+src/state\+\_\+manager.\+py\end{DoxyCompactItemize}

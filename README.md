@@ -99,7 +99,7 @@ The grid:
 - The initial position is fixed in position 0,0.
 
 ## System's limitations
-- Sometimes the node that prints
+- Sometimes the node PrintInfo looses information about the state if the change is too rapid.
 - The code supports few user commands and understands "go to 1 2" but wouldn't understand "go to one two" for example.
 - The user can't interface with the robot via shell, for example, since commands are pre defined inside the code.
 - The grid is limited.

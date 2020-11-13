@@ -30,10 +30,10 @@ It could also randomly send the "sleep command" to transition to sleep state, in
   - if the user says "Go to posx posy" (where posx and posy are two random x and y positions inside the grid where the dog moves), this command is published. 
   - if the user again says "Hey buddy" or "Play", the robot waits. 
   - if the user says nothing, the dog looks at his gestures and publishes the position indicated by the user hand. 
-
 At the end of the loop, the "normal command" is set as output of the stata.
 The user action is simulated through two functions: "user says" and "user does", respectively implementing speech commands and postion/gesture commands.
 
+Note: in all three cases, the nodes checks if parameter "arrived" is set before publishing the command. In fact, arrived is the parameter set by the node that communicates with the simulator when the robot has reached the target position. At the beginning it is set to true by the launch file.
 
 ### Geometry_grounding:
 
@@ -54,16 +54,18 @@ Prints the package parameters on terminal through loginfo.
 
 
 ## Messages and parameters
-The messages that are sent between the nodes are of two different types: 
+The messages that are sent between the nodes are of four different types: 
 - string for command topic
-- Int64MultiArray for target_pos and trajectory topics
+- std_msgs.msg/Int64MultiArray for target_pos 
+- geometry_msgs.msg/Twist for position to send to stage
+- nav_msgs.msg/Odometry for position to receive from stage
 
-The parameters used are:
+The parameters are:
 - state, which indicates the current state. It is set by the state manager
 - arrived, which indicates the availability of the robot to go to a new position. It is set in the launch file as 1 (available). Before publishing new target positions, the code always checks availability, waits until arrived=1 and then sets it back to arrived=0 and publishes the position.
 - all, which comprehends current_posx and current_posy, which represents the current position of the robot, and command, whcih represents the successive positions the robot needs to go to, which may be new commands or the person position. It is initialized by the state manager and updated by the robot_motion_controller. 
 
-All the parameters, are printed on screen by the printInfo node.
+All the parameters are printed on screen by the printInfo node.
 
 ## The simulator
 To simulate the dog I used ROS stage. This simulator allows to represent a robot (here it is just a simple green square) that moves on a grid. 
@@ -89,17 +91,16 @@ The user:
 
 The robot:
 - Since a simple stage simulator was used, I considered the robot as an omniwheel one. In order to implement this project on a real robot, this fact should be taken into consideration. However, MIRO.world and robot_motion_controller.py are the only files that should be changed in order to have, for example, a differential drive robot.
-- The robot usually wanders around if nothing happens and, after a certain time (a number n of loops), it goes to sleep, in order to simulate the sleep wake cycle. However, it could also feel sleepy at random moments and go to the sleep.
-- During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. However, it could also feel tired at random moments of the play phase and stop playing before the time is finished. The probability that this happens is half the one that this happens in normal state, since play time is supposedly engaging.
+- Behaviours: The robot usually wanders around if nothing happens and, after a certain time (a number n of loops), it goes to sleep, in order to simulate the sleep wake cycle. However, it could also feel sleepy at random moments and go to the sleep. During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. However, it could also feel tired at random moments of the play phase and stop playing before the time is finished. The probability that this happens is half the one that this happens in normal state, since play time is supposedly engaging.
 
 The grid:
-- The grid on which the robot moves is limited to 10x10 on the code
+- The grid on which the robot moves is limited to 10x10 on the code for simplicity (this is not clear on stage)
 - The human can move in the same grid, and has the same location limitations as the robot.
 - The kennel's position is fixed in position 3,3.
 - The initial position is fixed in position 0,0.
 
 ## System's limitations
-- Sometimes the node that prints
+- Sometimes the node PrintInfo looses information about the state if the change is too rapid.
 - The code supports few user commands and understands "go to 1 2" but wouldn't understand "go to one two" for example.
 - The user can't interface with the robot via shell, for example, since commands are pre defined inside the code.
 - The grid is limited.

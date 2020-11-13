@@ -1,7 +1,7 @@
 # Experimental robotics laboratory Assignments
 
 ## Introduction
-The package Exp_Lab_Assignments simulates a robot dog (hypothetically MIRo) moving on a gridded plane. He can either sleep in his kennel, wander around or play with a simulated user. In order to play with the robot, the user has to say "Hey buddy" or "Play". If he says so, the dog approaches the person and waits for a command such as "go to 1 2", or for a pointing gesture towars a direction. It then goes to the desired location and comes back. After a while it again starts wandering around around. 
+The package Exp_Lab_Assignments simulates a robot dog (hypothetically MIRo) moving on a gridded plane. He can either sleep in his kennel, wander around or play with a simulated user. In order to play with the robot, the user has to say "Hey buddy" or "Play". If he says so, the dog approaches the person and waits for a command such as "go to 1 2", or for a pointing gesture towards a direction. It then goes to the desired location and comes back. After a while it again starts wandering around around. 
 The project is implemented with a ROS structure, written in Python, and simulated through the ROS stage platform.
 
 ## Software architecture and state diagrams
@@ -10,6 +10,7 @@ The architecture is composed of four nodes:
 - Geometry grounding
 - Robot motion controller
 - Print Info
+
 The nodes are described in the next section of the readme.
 
 ### State_manager:
@@ -23,9 +24,9 @@ This node publishes on the command topic. It has a finite state machine composed
 The states are hereby described:
 - SLEEP: The state publishes the "go home" command, waits a few seconds to simulate the robots's nap, then outputs the "normal command" to transition to the normal state.
 - NORMAL: The state enters a loop. It listens to the user: 
-    - if the user says "Hey buddy" or "Play", it outputs the "play command" to transition to the play state. 
+    - if the user says "Hey buddy" or "Play", it outputs the "play command" to transition to the play state. This case is more probable in the code, since it is supposed that the user will be willing to play with the robot.
     - If the user says nothing, the state publishes the command "go rand" and waits a few seconds to wait for the execution of the command. 
-It could also randomly send the "sleep command" to transition to sleep state, in case the dig feels sleepy. At the end of the loop the state outputs the "sleep command".
+It could also randomly send the "sleep command" to transition to sleep state, in case the dog feels sleepy. At the end of the loop the state outputs the "sleep command".
 - PLAY: The state enters a loop. At each iteration it first goes to the user (i.e. looks at the user to save his/her position and ppublishes the coordinates). Then it listens to the user: 
   - if the user says "Go to posx posy" (where posx and posy are two random x and y positions inside the grid where the dog moves), this command is published. 
   - if the user again says "Hey buddy" or "Play", the robot waits. 
@@ -33,7 +34,7 @@ It could also randomly send the "sleep command" to transition to sleep state, in
 At the end of the loop, the "normal command" is set as output of the stata.
 The user action is simulated through two functions: "user says" and "user does", respectively implementing speech commands and postion/gesture commands.
 
-Note: in all three cases, the nodes checks if parameter "arrived" is set before publishing the command. In fact, arrived is the parameter set by the node that communicates with the simulator when the robot has reached the target position. At the beginning it is set to true by the launch file.
+Note: in all three cases, the nodes checks if parameter "arrived" is set before publishing the command. "arrived" is the parameter which is set by the node that communicates with the simulator when the robot has reached the target position. At the beginning it is set to true by the launch file.
 
 ### Geometry_grounding:
 
@@ -46,7 +47,7 @@ It publishes the coordinates on the "target pos" topic.
 
 ### Robot motion controller:
 
-It subscribes to the "odom" topic from stage and to the "target_pos" topic. It calculates the successive positions of the robot from the current to the next postion. It then publishes the velocity on the "cmd_vel" topic of stage.
+It subscribes to the "odom" topic from stage and to the "target_pos" topic. It calculates the successive positions of the robot from the current to the next postion by checking the current euclidean distance between positions. It then publishes the velocity on the "cmd_vel" topic of stage.
 
 
 ### Print info:
@@ -60,7 +61,7 @@ The final ros structure is the following:
 
 ## Messages and parameters
 The messages that are sent between the nodes are of four different types: 
-- string for command topic
+- std_msgs.msg/String for command topic
 - std_msgs.msg/Int64MultiArray for target_pos 
 - geometry_msgs.msg/Twist for position to send to stage
 - nav_msgs.msg/Odometry for position to receive from stage
@@ -68,7 +69,7 @@ The messages that are sent between the nodes are of four different types:
 The parameters are:
 - state, which indicates the current state. It is set by the state manager
 - arrived, which indicates the availability of the robot to go to a new position. It is set in the launch file as 1 (available). Before publishing new target positions, the code always checks availability, waits until arrived=1 and then sets it back to arrived=0 and publishes the position.
-- all, which comprehends current_posx and current_posy, which represents the current position of the robot, and command, whcih represents the successive positions the robot needs to go to, which may be new commands or the person position. It is initialized by the state manager and updated by the robot_motion_controller. 
+- all, which comprehends current_posx and current_posy, which represents the current position of the robot, and command, which represents the successive positions the robot needs to go to, which may be new commands or the person position. It is initialized by the state manager and updated by the robot_motion_controller. 
 
 All the parameters are printed on screen by the printInfo node.
 

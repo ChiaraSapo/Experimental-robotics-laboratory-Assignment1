@@ -102,7 +102,7 @@ The user:
 
 The robot:
 - Since a simple stage simulator was used, I considered the robot as an omniwheel one. In order to implement this project on a real robot, this fact should be taken into consideration. However, MIRO.world and robot_motion_controller.py are the only files that should be changed in order to have, for example, a differential drive robot.
-- Behaviours: The robot usually wanders around if nothing happens and, after a certain time (a number n of loops), it goes to sleep, in order to simulate the sleep wake cycle. However, it could also feel sleepy at random moments and go to the sleep. During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. However, it could also feel tired at random moments of the play phase and stop playing before the time is finished. The probability that this happens is half the one that this happens in normal state, since play time is supposedly engaging.
+- Behaviours: The robot usually wanders around if nothing happens and, after a certain time (a number n of loops), it goes to sleep, in order to simulate the sleep wake cycle. However, it could also feel sleepy at random moments and go to the sleep. During play phase, the robot first approaches the human, goes to the position, comes back and so on. After a certain time (a number m of loops) it feels tired and goes back to wandering. 
 
 The grid:
 - The grid on which the robot moves is limited to 10x10 on the code for simplicity (this is not clear on stage)

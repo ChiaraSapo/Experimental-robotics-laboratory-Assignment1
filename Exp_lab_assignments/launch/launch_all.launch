@@ -4,6 +4,7 @@
 	<node pkg="Exp_lab_assignments" name="geometry_grounding" type="geometry_grounding.py"/>
 	<param name="arrived" type="int" value="1" />
 	<!--node pkg="Exp_lab_assignments" name="state_manager" type="state_manager.py"/-->
+	
 	<node pkg="Exp_lab_assignments" name="robot_motion_controller" type="robot_motion_controller.py"/>
 
 

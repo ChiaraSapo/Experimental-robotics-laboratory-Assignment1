@@ -52,6 +52,11 @@ It subscribes to the "odom" topic from stage and to the "target_pos" topic. It c
 ### Print info:
 Prints the package parameters on terminal through loginfo.
 
+The final ros structure is the following:
+<p align="center">
+  <img height="200" src="https://github.com/ChiaraSapo/Experimental-robotics-laboratory-Assignments/blob/master/Exp_lab_assignments/images/Screenshot%20from%202020-11-13%2008-57-22.png?raw=true "Title"">
+</p>
+
 
 ## Messages and parameters
 The messages that are sent between the nodes are of four different types: 
@@ -82,7 +87,12 @@ Download the package in your_catkin_ws/src folder.
 cd "Your catkin workspace"/src/Exp_Lab_Assignments
 ./Ass1.sh
 ```
-This will install the package, and all the useful launch files and nodes will be started.
+This will install the package, and all the useful launch files and nodes will be started. In particular, you will have: 
+- one terminal for the launch files
+- one terminal for the state manager
+- one terminal for stage: look at it to see robot moving
+- one terminal to print to screen: look at it to see more information about movement 
+Close all terminals by Ctrl+C con the first terminal.
 
 ## Working hypoteses
 The user: 

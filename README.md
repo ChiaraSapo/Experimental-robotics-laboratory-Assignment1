@@ -86,6 +86,7 @@ Specifications about robot position, appearance and mobility are specified in wo
 Download the package in your_catkin_ws/src folder.
 ```sh
 cd "Your catkin workspace"/src/Exp_Lab_Assignments
+chmod +x Ass1.sh
 ./Ass1.sh
 ```
 This will install the package, and all the useful launch files and nodes will be started. In particular, you will have: 

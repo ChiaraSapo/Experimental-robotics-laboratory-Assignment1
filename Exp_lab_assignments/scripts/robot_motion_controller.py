@@ -1,6 +1,7 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 
-## @file robot_motion_controller.py
+
+# @file robot_motion_controller.py
 # @brief This node allows to move the robot from the current to the target position.
 
 
@@ -32,13 +33,18 @@ number = 1
 curr_x = 0
 curr_y = 0
 
-## Calculates the euclidean distance between two given points
+# Calculates the euclidean distance between two given points
+
+
 def EuclidianDistance(x_goal, y_goal, x_real, y_real):
-    euclidean_dist=math.sqrt(math.pow((x_goal-x_real), 2) + math.pow((y_goal-y_real), 2))
-	
+    euclidean_dist = math.sqrt(
+        math.pow((x_goal-x_real), 2) + math.pow((y_goal-y_real), 2))
+
     return euclidean_dist
 
-## Callback function for the robot position.
+# Callback function for the robot position.
+
+
 def odom_callback(data):
 
     global curr_x
@@ -47,10 +53,12 @@ def odom_callback(data):
     curr_x = data.pose.pose.position.x
     curr_y = data.pose.pose.position.y
 
-## Callback function for the target position.
+# Callback function for the target position.
 # It computes the velocity to send to the cmd_vel topic, by considering an omniwheel robot.
 # when the robot has arrived at desired position, publishes vel=0 and sets the "arrived" and
 # current robot position parameters.
+
+
 def traj_callback(data):
 
     global curr_x
@@ -85,7 +93,9 @@ def traj_callback(data):
 
     time.sleep(2)
 
-## Ros node that subscribes to the target_pos and odom topic and publishes on the cmd_vel topic.
+# Ros node that subscribes to the target_pos and odom topic and publishes on the cmd_vel topic.
+
+
 def robot_motion_controller():
 
     rospy.init_node('robot_motion_controlller', anonymous=True)

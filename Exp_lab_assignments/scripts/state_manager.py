@@ -18,7 +18,9 @@ pub = rospy.Publisher('command', String, queue_size=10)
 
 LOOPS = 3
 
-## Simulates a camera frame and the information it contains.
+# Simulates a camera frame and the information it contains.
+
+
 class coordinates_from_picture:
 
     # Init function for coordinates_from_picture class.
@@ -41,16 +43,18 @@ class coordinates_from_picture:
         self.gesture_posx = img_gesture_posx
         self.gesture_posy = img_gesture_posy
 
-## Simulates the user's voice commands.
+# Simulates the user's voice commands.
 # @param stateCalling: which state the robot is in
 # @return userVoice: user command
+
+
 def user_says(stateCalling):
 
     comm = "go to %d %d" % (random.randrange(0, 11), random.randrange(0, 11))
     if stateCalling == 0:  # normal
         userVoice = random.choice(['play', '', 'hey buddy'])
     if stateCalling == 1:  # play
-        userVoice = comm
+        userVoice = random.choice([comm, ''])
     return userVoice
 
 # Simulates the user's voice position and gesture.
@@ -69,16 +73,18 @@ def user_does():
 
     return userBody
 
-## Sleep state of the smach machine.
+# Sleep state of the smach machine.
+
+
 class MIRO_Sleep(smach.State):
 
-    ## Init function for smach machine sleep state.
+    # Init function for smach machine sleep state.
     def __init__(self):
 
         smach.State.__init__(self,
                              outcomes=['normal_command'])
 
-    ## Smach machine state sleep actions:
+    # Smach machine state sleep actions:
     # Publishes "go home" command, waits ("sleeps") and outputs command to enter normal state
     # @return c: command to switch between states.
     def execute(self, userdata):
@@ -102,16 +108,18 @@ class MIRO_Sleep(smach.State):
         c = 'normal_command'
         return c
 
-## Normal state of the smach machine.
+# Normal state of the smach machine.
+
+
 class MIRO_Normal(smach.State):
 
-    ## Init function for smach machine normal state.
+    # Init function for smach machine normal state.
     def __init__(self):
 
         smach.State.__init__(self,
                              outcomes=['sleep_command', 'play_command'])
 
-    ## Smach machine state normal actions:
+    # Smach machine state normal actions:
     # Listens to user: if user says "Play" or "Hey buddy" it outputs command to enter play state.
     # If user says nothing, it goes to random positions for a while (n loops) then outputs command to enter sleep state.
     # @return c: command to switch between states.
@@ -150,16 +158,18 @@ class MIRO_Normal(smach.State):
 
         return 'sleep_command'
 
-## Play state of the smach machine.
+# Play state of the smach machine.
+
+
 class MIRO_Play(smach.State):
 
-    ## Init function for smach machine play state.
+    # Init function for smach machine play state.
     def __init__(self):
 
         smach.State.__init__(self,
                              outcomes=['normal_command'])
 
-    ## Smach machine state play actions:
+    # Smach machine state play actions:
     # Looks at user, saves his coordinates as next position, publishes them (goes toward the human).
     # It then listens to the user. If user says "go to posx posy", publishes the coordinates (goes to the point).
     # If user says "Hey buddy" or "Play" it waits. If user says nothing, it looks for the user gesture to go somewhere,
@@ -219,7 +229,7 @@ class MIRO_Play(smach.State):
                 # Look at user gesture
                 user_gesture = user_does()
                 user_command = "go to %d %d" % (
-                    user_camera.gesture_posx, user_camera.gesture_posy)
+                    user_gesture[2], user_gesture[3])  
 
                 while rospy.get_param('arrived') == 0:
                     time.sleep(1)
@@ -232,8 +242,10 @@ class MIRO_Play(smach.State):
         c = 'normal_command'
         return c
 
-## Ros node that implements a state machine with three states: sleep, play, normal.
+# Ros node that implements a state machine with three states: sleep, play, normal.
 # It also initializes the home postion and the arrival parameters.
+
+
 def main():
 
     rospy.init_node('state_manager')

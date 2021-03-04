@@ -4,11 +4,11 @@ import roslib
 import rospy
 import time
 
-## @file printInfo.py
+# @file printInfo.py
 # @brief This node prints informations about target position, reached position, state
 
 
-## Prints the important parameters as loginfo: state, command, robot position
+# Prints the important parameters as loginfo: state, command, robot position
 def printer():
 
     s = x = -1  # y not needed, comes together with x

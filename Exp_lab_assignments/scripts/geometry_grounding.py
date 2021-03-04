@@ -1,6 +1,6 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 
-## @file geometry_grounding.py
+# @file geometry_grounding.py
 # @brief This node transforms a command into two x,y coordinates.
 
 
@@ -16,11 +16,13 @@ pub = rospy.Publisher('target_pos', Int64MultiArray, queue_size=10)
 pos_to_send = Int64MultiArray()
 pos_to_send.data = []
 
-## Callback function for the user command.
+# Callback function for the user command.
 # If the command is a "go to x y" command, it sets the target position as x,y.
 # If the command is a "go home" command, it sets the target postion as home_posx,home_posy.
 # If the command is a "go rand" command, it sets the target position as random coordinates.
 # It then publishes the target position.
+
+
 def callback(data):
 
     input_string = str(data.data)
@@ -44,7 +46,9 @@ def callback(data):
     # Publish
     pub.publish(pos_to_send)
 
-## Ros node that subscribes to the targcommand topic and publishes on the target_pos topic.
+# Ros node that subscribes to the targcommand topic and publishes on the target_pos topic.
+
+
 def geometry_grounding():
 
     rospy.init_node('geometry_grounding', anonymous=True)
